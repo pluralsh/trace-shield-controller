@@ -1,0 +1,12 @@
+apiVersion: observability.traceshield.io/v1alpha1
+kind: Tenant
+metadata:
+  labels:
+    app.kubernetes.io/name: tenant
+    app.kubernetes.io/instance: tenant-sample
+    app.kubernetes.io/part-of: trace-shield-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: trace-shield-controller
+  name: tenant-sample
+spec:
+  # TODO(user): Add fields here

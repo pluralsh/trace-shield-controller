@@ -5,6 +5,17 @@
 domain: traceshield.io
 layout:
 - go.kubebuilder.io/v4-alpha
+multigroup: true
 projectName: trace-shield-controller
 repo: github.com/pluralsh/trace-shield-controller
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: traceshield.io
+  group: observability
+  kind: Tenant
+  path: github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1
+  version: v1alpha1
 version: "3"
