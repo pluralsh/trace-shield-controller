@@ -43,7 +43,7 @@ type LimitSpec struct {
 	//The set of limits for the tenant on Mimir
 
 	// +kubebuilder:validation:Optional
-	Mimir MimirLimits `json:"mimir,omitempty"`
+	Mimir Mimir `json:"mimir,omitempty"`
 }
 
 // TenantStatus defines the observed state of Tenant

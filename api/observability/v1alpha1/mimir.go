@@ -6,7 +6,7 @@ import (
 	"github.com/prometheus/common/model"
 )
 
-type MimirLimits struct {
+type Mimir struct {
 	// Distributor enforced limits.
 	// +kubebuilder:validation:Optional
 	RequestRate float64 `yaml:"request_rate,omitempty" json:"request_rate,omitempty" category:"experimental"`
