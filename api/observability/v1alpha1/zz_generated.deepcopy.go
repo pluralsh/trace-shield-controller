@@ -22,7 +22,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"github.com/grafana/dskit/flagext"
 	"github.com/pluralsh/controller-reconcile-helper/pkg/types"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -84,7 +83,7 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	*out = *in
 	if in.DropLabels != nil {
 		in, out := &in.DropLabels, &out.DropLabels
-		*out = make(flagext.StringSlice, len(*in))
+		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
 	if in.NotificationRateLimitPerIntegration != nil {

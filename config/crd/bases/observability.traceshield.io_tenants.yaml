@@ -101,8 +101,6 @@ spec:
                         format: int64
                         type: integer
                       drop_labels:
-                        description: StringSlice is a slice of strings that implements
-                          flag.Value
                         items:
                           type: string
                         type: array

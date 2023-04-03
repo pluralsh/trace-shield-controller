@@ -3,7 +3,6 @@ package v1alpha1
 import (
 	"io"
 
-	"github.com/grafana/dskit/flagext"
 	crhelperTypes "github.com/pluralsh/controller-reconcile-helper/pkg/types"
 	"github.com/prometheus/common/model"
 )
@@ -27,7 +26,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	HAMaxClusters int `yaml:"ha_max_clusters,omitempty" json:"ha_max_clusters,omitempty"`
 	// +kubebuilder:validation:Optional
-	DropLabels flagext.StringSlice `yaml:"drop_labels,omitempty" json:"drop_labels,omitempty" category:"advanced"`
+	DropLabels []string `yaml:"drop_labels,omitempty" json:"drop_labels,omitempty" category:"advanced"`
 	// +kubebuilder:validation:Optional
 	MaxLabelNameLength int `yaml:"max_label_name_length,omitempty" json:"max_label_name_length,omitempty"`
 	// +kubebuilder:validation:Optional
