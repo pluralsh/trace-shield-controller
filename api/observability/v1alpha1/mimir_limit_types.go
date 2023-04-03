@@ -8,7 +8,7 @@ import (
 	"github.com/prometheus/common/model"
 )
 
-type Mimir struct {
+type MimirLimits struct {
 	// Distributor enforced limits.
 	// +kubebuilder:validation:Optional
 	RequestRate float64 `yaml:"request_rate,omitempty" json:"request_rate,omitempty" category:"experimental"`
@@ -221,7 +221,7 @@ const (
 )
 
 // UnmarshalGQL implements the graphql.Unmarshaler interface
-func (y *Mimir) UnmarshalGQL(v interface{}) error {
+func (y *MimirLimits) UnmarshalGQL(v interface{}) error {
 	// yes, ok := v.(string)
 	// if !ok {
 	// 	return fmt.Errorf("YesNo must be a string")
@@ -236,7 +236,7 @@ func (y *Mimir) UnmarshalGQL(v interface{}) error {
 }
 
 // MarshalGQL implements the graphql.Marshaler interface
-func (y Mimir) MarshalGQL(w io.Writer) {
+func (y MimirLimits) MarshalGQL(w io.Writer) {
 	// if y {
 	// 	w.Write([]byte(`"yes"`))
 	// } else {
