@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"io"
+
 	"github.com/grafana/dskit/flagext"
 	crhelperTypes "github.com/pluralsh/controller-reconcile-helper/pkg/types"
 	"github.com/prometheus/common/model"
@@ -299,4 +301,28 @@ func (t *Tenant) SetConditions(conditions crhelperTypes.Conditions) {
 
 func init() {
 	SchemeBuilder.Register(&Tenant{}, &TenantList{})
+}
+
+// UnmarshalGQL implements the graphql.Unmarshaler interface
+func (y *MimirLimits) UnmarshalGQL(v interface{}) error {
+	// yes, ok := v.(string)
+	// if !ok {
+	// 	return fmt.Errorf("YesNo must be a string")
+	// }
+
+	// if yes == "yes" {
+	// 	*y = true
+	// } else {
+	// 	*y = false
+	// }
+	return nil
+}
+
+// MarshalGQL implements the graphql.Marshaler interface
+func (y MimirLimits) MarshalGQL(w io.Writer) {
+	// if y {
+	// 	w.Write([]byte(`"yes"`))
+	// } else {
+	// 	w.Write([]byte(`"no"`))
+	// }
 }
