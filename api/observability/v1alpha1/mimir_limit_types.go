@@ -178,7 +178,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	NotificationRateLimit float64 `yaml:"alertmanager_notification_rate_limit,omitempty" json:"alertmanager_notification_rate_limit,omitempty"`
 	// +kubebuilder:validation:Optional
-	NotificationRateLimitPerIntegration NotificationRateLimitMap `yaml:"alertmanager_notification_rate_limit_per_integration,omitempty" json:"alertmanager_notification_rate_limit_per_integration,omitempty"`
+	NotificationRateLimitPerIntegration map[string]float64 `yaml:"alertmanager_notification_rate_limit_per_integration,omitempty" json:"alertmanager_notification_rate_limit_per_integration,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	AlertmanagerMaxConfigSizeBytes int `yaml:"alertmanager_max_config_size_bytes,omitempty" json:"alertmanager_max_config_size_bytes,omitempty"`
@@ -208,8 +208,6 @@ type ForwardingRule struct {
 
 // ForwardingRules are keyed by metric names, excluding labels.
 type ForwardingRules map[string]ForwardingRule
-
-type NotificationRateLimitMap map[string]float64
 
 const (
 	// TenantReadyCondition reports on current status of the Tenant. Ready indicates the tenant has been created and the limits have been applied.
