@@ -52,8 +52,13 @@ func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
+	var mimirConfigMapNs string
+	var mimirConfigMapName string
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
+	flag.StringVar(&mimirConfigMapNs, "mimir-configmap-namespace", "mimir", "The namespace where the configmap for the mimir tenant limits will be generated.")
+	flag.StringVar(&mimirConfigMapName, "mimir-configmap-name", "mimir-runtime", "The name of the configmap for the mimir tenant limits.")
+	// flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
@@ -90,8 +95,10 @@ func main() {
 	}
 
 	if err = (&observabilitycontroller.TenantReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:          mgr.GetClient(),
+		Scheme:          mgr.GetScheme(),
+		MimirConfigNs:   mimirConfigMapNs,
+		MimirConfigName: mimirConfigMapName,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Tenant")
 		os.Exit(1)

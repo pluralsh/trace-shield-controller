@@ -9,4 +9,80 @@ metadata:
     app.kubernetes.io/created-by: trace-shield-controller
   name: tenant-sample
 spec:
-  # TODO(user): Add fields here
+  displayName: "Tenant Sample"
+  limits:
+    mimir:
+      request_rate: 100
+      ingestion_tenant_shard_size: 2
+---
+apiVersion: observability.traceshield.io/v1alpha1
+kind: Tenant
+metadata:
+  labels:
+    app.kubernetes.io/name: tenant
+    app.kubernetes.io/instance: tenant-sample
+    app.kubernetes.io/part-of: trace-shield-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: trace-shield-controller
+  name: tenant-sample-2
+spec:
+  displayName: "Tenant Sample 2"
+  limits:
+    mimir:
+      request_rate: 100
+      max_queriers_per_tenant: 2
+      cardinality_analysis_enabled: true
+---
+apiVersion: observability.traceshield.io/v1alpha1
+kind: Tenant
+metadata:
+  labels:
+    app.kubernetes.io/name: tenant
+    app.kubernetes.io/instance: tenant-sample
+    app.kubernetes.io/part-of: trace-shield-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: trace-shield-controller
+  name: tenant-sample-3
+spec:
+  displayName: "Tenant Sample 3"
+  limits:
+    mimir:
+      request_rate: 4653
+      max_queriers_per_tenant: 65
+      cardinality_analysis_enabled: true
+---
+apiVersion: observability.traceshield.io/v1alpha1
+kind: Tenant
+metadata:
+  labels:
+    app.kubernetes.io/name: tenant
+    app.kubernetes.io/instance: tenant-sample
+    app.kubernetes.io/part-of: trace-shield-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: trace-shield-controller
+  name: tenant-sample-4
+spec:
+  displayName: "Tenant Sample 4"
+  limits:
+    mimir:
+      request_rate: 4653
+      max_queriers_per_tenant: 65
+      cardinality_analysis_enabled: false
+---
+apiVersion: observability.traceshield.io/v1alpha1
+kind: Tenant
+metadata:
+  labels:
+    app.kubernetes.io/name: tenant
+    app.kubernetes.io/instance: tenant-sample
+    app.kubernetes.io/part-of: trace-shield-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: trace-shield-controller
+  name: plrltest2
+spec:
+  displayName: "plrltest2"
+  limits:
+    mimir:
+      ruler_max_rule_groups_per_tenant: 75
+      ingestion_rate: 20000
+      ingestion_burst_size: 60000
