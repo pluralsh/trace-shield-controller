@@ -1,6 +1,8 @@
 package v1alpha1
 
 import (
+	"io"
+
 	"github.com/grafana/dskit/flagext"
 	crhelperTypes "github.com/pluralsh/controller-reconcile-helper/pkg/types"
 	"github.com/prometheus/common/model"
@@ -217,3 +219,27 @@ const (
 	// MimirLimitsValidationErrorReason used when the limits configured for Mimir are invalid.
 	MimirLimitsValidationErrorReason = "MimirLimitsValidationError"
 )
+
+// UnmarshalGQL implements the graphql.Unmarshaler interface
+func (y *Mimir) UnmarshalGQL(v interface{}) error {
+	// yes, ok := v.(string)
+	// if !ok {
+	// 	return fmt.Errorf("YesNo must be a string")
+	// }
+
+	// if yes == "yes" {
+	// 	*y = true
+	// } else {
+	// 	*y = false
+	// }
+	return nil
+}
+
+// MarshalGQL implements the graphql.Marshaler interface
+func (y Mimir) MarshalGQL(w io.Writer) {
+	// if y {
+	// 	w.Write([]byte(`"yes"`))
+	// } else {
+	// 	w.Write([]byte(`"no"`))
+	// }
+}
