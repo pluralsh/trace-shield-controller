@@ -8,6 +8,14 @@ rules:
 - apiGroups:
   - observability.traceshield.io
   resources:
+  - configs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - observability.traceshield.io
+  resources:
   - tenants
   verbs:
   - create
@@ -37,7 +45,6 @@ rules:
   - configmaps
   verbs:
   - create
-  - delete
   - get
   - list
   - patch
