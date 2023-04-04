@@ -51,6 +51,7 @@ type TenantStatus struct {
 	Conditions crhelperTypes.Conditions `json:"conditions,omitempty"`
 }
 
+//+genclient
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:path=tenants,scope=Cluster

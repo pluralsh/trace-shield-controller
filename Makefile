@@ -122,6 +122,24 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
 
+.PHONY: run-client-gen
+run-client-gen: client-gen
+	$(CLIENT_GEN) --clientset-name versioned --input-base github.com/pluralsh/trace-shield-controller/api --input observability/v1alpha1 --output-package github.com/pluralsh/trace-shield-controller/generated/client/clientset --go-header-file hack/boilerplate.go.txt
+
+.PHONY: run-lister-gen
+run-lister-gen: lister-gen
+	$(LISTER_GEN) --input-dirs github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1 --output-package github.com/pluralsh/trace-shield-controller/generated/client/listers --go-header-file hack/boilerplate.go.txt
+
+.PHONY: run-informer-gen
+run-informer-gen: informer-gen
+	$(INFORMER_GEN) --input-dirs github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1  --versioned-clientset-package github.com/pluralsh/trace-shield-controller/generated/client/clientset/versioned --listers-package github.com/pluralsh/trace-shield-controller/generated/client/listers --output-package github.com/pluralsh/trace-shield-controller/generated/client/informers --go-header-file hack/boilerplate.go.txt
+
+.PHONY: generate-client
+generate-client: run-client-gen run-lister-gen run-informer-gen
+	rm -rf generated
+	mv github.com/pluralsh/trace-shield-controller/generated generated
+	rm -rf github.com
+
 ##@ Build Dependencies
 
 ## Location to install dependencies to
@@ -133,10 +151,16 @@ $(LOCALBIN):
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 ENVTEST ?= $(LOCALBIN)/setup-envtest
+CLIENT_GEN ?= $(LOCALBIN)/client-gen
+LISTER_GEN ?= $(LOCALBIN)/lister-gen
+INFORMER_GEN ?= $(LOCALBIN)/informer-gen
+DEFFAULTER_GEN ?= $(LOCALBIN)/defaulter-gen
+DEEPCOPY_GEN ?= $(LOCALBIN)/deepcopy-gen
 
 ## Tool Versions
 KUSTOMIZE_VERSION ?= v4.5.7
 CONTROLLER_TOOLS_VERSION ?= v0.11.1
+CLIENT_TOOLS_VERSION ?= v0.25.3
 
 KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
 .PHONY: kustomize
@@ -158,3 +182,33 @@ $(CONTROLLER_GEN): $(LOCALBIN)
 envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+.PHONY: client-gen
+client-gen: $(CLIENT_GEN) ## Download client-gen locally if necessary.
+$(CLIENT_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/client-gen && $(LOCALBIN)/client-gen || \
+	GOBIN=$(LOCALBIN) go install k8s.io/code-generator/cmd/client-gen@$(CLIENT_TOOLS_VERSION)
+
+.PHONY: lister-gen
+lister-gen: $(LISTER_GEN) ## Download lister-gen locally if necessary.
+$(LISTER_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/lister-gen && $(LOCALBIN)/lister-gen || \
+	GOBIN=$(LOCALBIN) go install k8s.io/code-generator/cmd/lister-gen@$(CLIENT_TOOLS_VERSION)
+
+.PHONY: informer-gen
+informer-gen: $(INFORMER_GEN) ## Download informer-gen locally if necessary.
+$(INFORMER_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/informer-gen && $(LOCALBIN)/informer-gen || \
+	GOBIN=$(LOCALBIN) go install k8s.io/code-generator/cmd/informer-gen@$(CLIENT_TOOLS_VERSION)
+
+.PHONY: defaulter-gen
+defaulter-gen: $(DEFFAULTER_GEN) ## Download defaulter-gen locally if necessary.
+$(DEFFAULTER_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/defaulter-gen && $(LOCALBIN)/defaulter-gen || \
+	GOBIN=$(LOCALBIN) go install k8s.io/code-generator/cmd/defaulter-gen@$(CLIENT_TOOLS_VERSION)
+
+.PHONY: deepcopy-gen
+deepcopy-gen: $(DEEPCOPY_GEN) ## Download deepcopy-gen locally if necessary.
+$(DEEPCOPY_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/deepcopy-gen && $(LOCALBIN)/deepcopy-gen || \
+	GOBIN=$(LOCALBIN) go install k8s.io/code-generator/cmd/deepcopy-gen@$(CLIENT_TOOLS_VERSION)
