@@ -57,7 +57,7 @@ const (
 	tenantFinalizerName = "tenants.observability.traceshield.io/finalizer"
 )
 
-//+kubebuilder:rbac:groups=v1,resources=configmaps,verbs=get;list;watch;create;update;patch
+//+kubebuilder:rbac:groups="",resources=configmaps,verbs=get;list;watch;create;update;patch
 //+kubebuilder:rbac:groups=observability.traceshield.io,resources=configs,verbs=get;list;watch
 //+kubebuilder:rbac:groups=observability.traceshield.io,resources=tenants,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=observability.traceshield.io,resources=tenants/status,verbs=get;update;patch
