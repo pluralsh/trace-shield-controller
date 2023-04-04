@@ -35,9 +35,9 @@ type FakeTenants struct {
 	ns   string
 }
 
-var tenantsResource = schema.GroupVersionResource{Group: "observability.trace-shield.io", Version: "v1alpha1", Resource: "tenants"}
+var tenantsResource = schema.GroupVersionResource{Group: "observability.traceshield.io", Version: "v1alpha1", Resource: "tenants"}
 
-var tenantsKind = schema.GroupVersionKind{Group: "observability.trace-shield.io", Version: "v1alpha1", Kind: "Tenant"}
+var tenantsKind = schema.GroupVersionKind{Group: "observability.traceshield.io", Version: "v1alpha1", Kind: "Tenant"}
 
 // Get takes name of the tenant, and returns the corresponding tenant object, and an error if there is any.
 func (c *FakeTenants) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Tenant, err error) {

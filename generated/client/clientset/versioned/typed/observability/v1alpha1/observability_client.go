@@ -31,7 +31,7 @@ type ObservabilityV1alpha1Interface interface {
 	TenantsGetter
 }
 
-// ObservabilityV1alpha1Client is used to interact with features provided by the observability.trace-shield.io group.
+// ObservabilityV1alpha1Client is used to interact with features provided by the observability.traceshield.io group.
 type ObservabilityV1alpha1Client struct {
 	restClient rest.Interface
 }

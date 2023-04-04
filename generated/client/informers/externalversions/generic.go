@@ -51,7 +51,7 @@ func (f *genericInformer) Lister() cache.GenericLister {
 // TODO extend this to unknown resources with a client pool
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
-	// Group=observability.trace-shield.io, Version=v1alpha1
+	// Group=observability.traceshield.io, Version=v1alpha1
 	case v1alpha1.SchemeGroupVersion.WithResource("configs"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Observability().V1alpha1().Configs().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("tenants"):

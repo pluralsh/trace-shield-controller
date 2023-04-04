@@ -35,9 +35,9 @@ type FakeConfigs struct {
 	ns   string
 }
 
-var configsResource = schema.GroupVersionResource{Group: "observability.trace-shield.io", Version: "v1alpha1", Resource: "configs"}
+var configsResource = schema.GroupVersionResource{Group: "observability.traceshield.io", Version: "v1alpha1", Resource: "configs"}
 
-var configsKind = schema.GroupVersionKind{Group: "observability.trace-shield.io", Version: "v1alpha1", Kind: "Config"}
+var configsKind = schema.GroupVersionKind{Group: "observability.traceshield.io", Version: "v1alpha1", Kind: "Config"}
 
 // Get takes name of the config, and returns the corresponding config object, and an error if there is any.
 func (c *FakeConfigs) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Config, err error) {
