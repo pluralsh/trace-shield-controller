@@ -232,6 +232,8 @@ type MimirLimits struct {
 	ForwardingRules map[string]*ForwardingRule `yaml:"forwarding_rules,omitempty" json:"forwarding_rules,omitempty" doc:"nocli|description=Rules based on which the Distributor decides whether a metric should be forwarded to an alternative remote_write API endpoint."`
 }
 
+type MimirLimitsInput MimirLimits
+
 type ForwardingRule struct {
 	// Ingest defines whether a metric should still be pushed to the Ingesters despite it being forwarded.
 	Ingest *bool `yaml:"ingest,omitempty" json:"ingest,omitempty"`

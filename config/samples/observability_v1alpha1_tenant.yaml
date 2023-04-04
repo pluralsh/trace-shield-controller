@@ -73,6 +73,15 @@ spec:
       - test2
       accept_ha_samples: true
       creation_grace_period: 10m
+      alertmanager_notification_rate_limit_per_integration:
+        slack: 10000
+        pagerduty: 999999
+        webhook: 10
+      forwarding_rules:
+        test:
+          ingest: true
+        test2:
+          ingest: false
 ---
 apiVersion: observability.traceshield.io/v1alpha1
 kind: Tenant
