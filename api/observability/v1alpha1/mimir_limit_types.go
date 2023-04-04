@@ -44,6 +44,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 
 	// TODO: decide if we should support this (experimental) List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs.
+	// +kubebuilder:validation:Optional
 	//MetricRelabelConfigs []*Config `yaml:"metric_relabel_configs,omitempty" json:"metric_relabel_configs,omitempty" doc:"nocli|description=List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs." category:"experimental"`
 
 	// Ingester enforced limits.
@@ -65,6 +66,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	NativeHistogramsIngestionEnabled bool `yaml:"native_histograms_ingestion_enabled,omitempty" json:"native_histograms_ingestion_enabled,omitempty" category:"experimental"`
 	// Active series custom trackers
+	// +kubebuilder:validation:Optional
 	// TODO: re-enable once fixed ActiveSeriesCustomTrackersConfig CustomTrackersConfig `yaml:"active_series_custom_trackers,omitempty" json:"active_series_custom_trackers,omitempty" doc:"description=Additional custom trackers for active metrics. If there are active series matching a provided matcher (map value), the count will be exposed in the custom trackers metric labeled using the tracker name (map key). Zero valued counts are not exposed (and removed when they go back to zero)." category:"advanced"`
 	// Max allowed time window for out-of-order samples.
 	// +kubebuilder:validation:Optional
@@ -198,16 +200,14 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	ForwardingDropOlderThan model.Duration `yaml:"forwarding_drop_older_than,omitempty" json:"forwarding_drop_older_than,omitempty" doc:"nocli|description=If set, forwarding drops samples that are older than this duration. If unset or 0, no samples get dropped."`
 	// +kubebuilder:validation:Optional
-	ForwardingRules ForwardingRules `yaml:"forwarding_rules,omitempty" json:"forwarding_rules,omitempty" doc:"nocli|description=Rules based on which the Distributor decides whether a metric should be forwarded to an alternative remote_write API endpoint."`
+	// ForwardingRules are keyed by metric names, excluding labels.
+	ForwardingRules map[string]ForwardingRule `yaml:"forwarding_rules,omitempty" json:"forwarding_rules,omitempty" doc:"nocli|description=Rules based on which the Distributor decides whether a metric should be forwarded to an alternative remote_write API endpoint."`
 }
 
 type ForwardingRule struct {
 	// Ingest defines whether a metric should still be pushed to the Ingesters despite it being forwarded.
 	Ingest bool `yaml:"ingest,omitempty" json:"ingest,omitempty"`
 }
-
-// ForwardingRules are keyed by metric names, excluding labels.
-type ForwardingRules map[string]ForwardingRule
 
 const (
 	// TenantReadyCondition reports on current status of the Tenant. Ready indicates the tenant has been created and the limits have been applied.
