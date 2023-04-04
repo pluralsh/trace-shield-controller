@@ -23,7 +23,7 @@ package v1alpha1
 
 import (
 	"github.com/pluralsh/controller-reconcile-helper/pkg/types"
-	"github.com/prometheus/common/model"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -309,7 +309,7 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.CreationGracePeriod != nil {
 		in, out := &in.CreationGracePeriod, &out.CreationGracePeriod
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.EnforceMetadataMetricName != nil {
@@ -354,7 +354,7 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.OutOfOrderTimeWindow != nil {
 		in, out := &in.OutOfOrderTimeWindow, &out.OutOfOrderTimeWindow
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.OutOfOrderBlocksExternalLabelEnabled != nil {
@@ -384,12 +384,12 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.MaxQueryLookback != nil {
 		in, out := &in.MaxQueryLookback, &out.MaxQueryLookback
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.MaxPartialQueryLength != nil {
 		in, out := &in.MaxPartialQueryLength, &out.MaxPartialQueryLength
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.MaxQueryParallelism != nil {
@@ -399,12 +399,12 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.MaxLabelsQueryLength != nil {
 		in, out := &in.MaxLabelsQueryLength, &out.MaxLabelsQueryLength
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.MaxCacheFreshness != nil {
 		in, out := &in.MaxCacheFreshness, &out.MaxCacheFreshness
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.MaxQueriersPerTenant != nil {
@@ -429,22 +429,22 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.SplitInstantQueriesByInterval != nil {
 		in, out := &in.SplitInstantQueriesByInterval, &out.SplitInstantQueriesByInterval
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.MaxTotalQueryLength != nil {
 		in, out := &in.MaxTotalQueryLength, &out.MaxTotalQueryLength
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.ResultsCacheTTL != nil {
 		in, out := &in.ResultsCacheTTL, &out.ResultsCacheTTL
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.ResultsCacheTTLForOutOfOrderTimeWindow != nil {
 		in, out := &in.ResultsCacheTTLForOutOfOrderTimeWindow, &out.ResultsCacheTTLForOutOfOrderTimeWindow
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.MaxQueryExpressionSizeBytes != nil {
@@ -469,7 +469,7 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.RulerEvaluationDelay != nil {
 		in, out := &in.RulerEvaluationDelay, &out.RulerEvaluationDelay
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.RulerTenantShardSize != nil {
@@ -504,7 +504,7 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.CompactorBlocksRetentionPeriod != nil {
 		in, out := &in.CompactorBlocksRetentionPeriod, &out.CompactorBlocksRetentionPeriod
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.CompactorSplitAndMergeShards != nil {
@@ -524,7 +524,7 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.CompactorPartialBlockDeletionDelay != nil {
 		in, out := &in.CompactorPartialBlockDeletionDelay, &out.CompactorPartialBlockDeletionDelay
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.CompactorBlockUploadEnabled != nil {
@@ -624,7 +624,7 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.ForwardingDropOlderThan != nil {
 		in, out := &in.ForwardingDropOlderThan, &out.ForwardingDropOlderThan
-		*out = new(model.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.ForwardingRules != nil {

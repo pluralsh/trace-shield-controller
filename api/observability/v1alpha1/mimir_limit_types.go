@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	crhelperTypes "github.com/pluralsh/controller-reconcile-helper/pkg/types"
-	"github.com/prometheus/common/model"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type MimirLimits struct {
@@ -33,8 +33,12 @@ type MimirLimits struct {
 	MaxLabelNamesPerSeries *int `yaml:"max_label_names_per_series,omitempty" json:"max_label_names_per_series,omitempty"`
 	// +kubebuilder:validation:Optional
 	MaxMetadataLength *int `yaml:"max_metadata_length,omitempty" json:"max_metadata_length,omitempty"`
+
 	// +kubebuilder:validation:Optional
-	CreationGracePeriod *model.Duration `yaml:"creation_grace_period,omitempty" json:"creation_grace_period,omitempty" category:"advanced"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	CreationGracePeriod *metav1.Duration `yaml:"creation_grace_period,omitempty" json:"creation_grace_period,omitempty" category:"advanced"`
+
 	// +kubebuilder:validation:Optional
 	EnforceMetadataMetricName *bool `yaml:"enforce_metadata_metric_name,omitempty" json:"enforce_metadata_metric_name,omitempty" category:"advanced"`
 	// +kubebuilder:validation:Optional
@@ -68,7 +72,9 @@ type MimirLimits struct {
 	// TODO: re-enable once fixed ActiveSeriesCustomTrackersConfig CustomTrackersConfig `yaml:"active_series_custom_trackers,omitempty" json:"active_series_custom_trackers,omitempty" doc:"description=Additional custom trackers for active metrics. If there are active series matching a provided matcher (map value), the count will be exposed in the custom trackers metric labeled using the tracker name (map key). Zero valued counts are not exposed (and removed when they go back to zero)." category:"advanced"`
 	// Max allowed time window for out-of-order samples.
 	// +kubebuilder:validation:Optional
-	OutOfOrderTimeWindow *model.Duration `yaml:"out_of_order_time_window,omitempty" json:"out_of_order_time_window,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	OutOfOrderTimeWindow *metav1.Duration `yaml:"out_of_order_time_window,omitempty" json:"out_of_order_time_window,omitempty" category:"experimental"`
 	// +kubebuilder:validation:Optional
 	OutOfOrderBlocksExternalLabelEnabled *bool `yaml:"out_of_order_blocks_external_label_enabled,omitempty" json:"out_of_order_blocks_external_label_enabled,omitempty" category:"experimental"`
 	// +kubebuilder:validation:Optional
@@ -85,15 +91,23 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	MaxFetchedChunkBytesPerQuery *int `yaml:"max_fetched_chunk_bytes_per_query,omitempty" json:"max_fetched_chunk_bytes_per_query,omitempty"`
 	// +kubebuilder:validation:Optional
-	MaxQueryLookback *model.Duration `yaml:"max_query_lookback,omitempty" json:"max_query_lookback,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	MaxQueryLookback *metav1.Duration `yaml:"max_query_lookback,omitempty" json:"max_query_lookback,omitempty"`
 	// +kubebuilder:validation:Optional
-	MaxPartialQueryLength *model.Duration `yaml:"max_partial_query_length,omitempty" json:"max_partial_query_length,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	MaxPartialQueryLength *metav1.Duration `yaml:"max_partial_query_length,omitempty" json:"max_partial_query_length,omitempty"`
 	// +kubebuilder:validation:Optional
 	MaxQueryParallelism *int `yaml:"max_query_parallelism,omitempty" json:"max_query_parallelism,omitempty"`
 	// +kubebuilder:validation:Optional
-	MaxLabelsQueryLength *model.Duration `yaml:"max_labels_query_length,omitempty" json:"max_labels_query_length,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	MaxLabelsQueryLength *metav1.Duration `yaml:"max_labels_query_length,omitempty" json:"max_labels_query_length,omitempty"`
 	// +kubebuilder:validation:Optional
-	MaxCacheFreshness *model.Duration `yaml:"max_cache_freshness,omitempty" json:"max_cache_freshness,omitempty" category:"advanced"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	MaxCacheFreshness *metav1.Duration `yaml:"max_cache_freshness,omitempty" json:"max_cache_freshness,omitempty" category:"advanced"`
 	// +kubebuilder:validation:Optional
 	MaxQueriersPerTenant *int `yaml:"max_queriers_per_tenant,omitempty" json:"max_queriers_per_tenant,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -103,15 +117,23 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	QueryShardingMaxRegexpSizeBytes *int `yaml:"query_sharding_max_regexp_size_bytes,omitempty" json:"query_sharding_max_regexp_size_bytes,omitempty" category:"experimental"`
 	// +kubebuilder:validation:Optional
-	SplitInstantQueriesByInterval *model.Duration `yaml:"split_instant_queries_by_interval,omitempty" json:"split_instant_queries_by_interval,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	SplitInstantQueriesByInterval *metav1.Duration `yaml:"split_instant_queries_by_interval,omitempty" json:"split_instant_queries_by_interval,omitempty" category:"experimental"`
 
 	// Query-frontend limits.
 	// +kubebuilder:validation:Optional
-	MaxTotalQueryLength *model.Duration `yaml:"max_total_query_length,omitempty" json:"max_total_query_length,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	MaxTotalQueryLength *metav1.Duration `yaml:"max_total_query_length,omitempty" json:"max_total_query_length,omitempty"`
 	// +kubebuilder:validation:Optional
-	ResultsCacheTTL *model.Duration `yaml:"results_cache_ttl,omitempty" json:"results_cache_ttl,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	ResultsCacheTTL *metav1.Duration `yaml:"results_cache_ttl,omitempty" json:"results_cache_ttl,omitempty" category:"experimental"`
 	// +kubebuilder:validation:Optional
-	ResultsCacheTTLForOutOfOrderTimeWindow *model.Duration `yaml:"results_cache_ttl_for_out_of_order_time_window,omitempty" json:"results_cache_ttl_for_out_of_order_time_window,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	ResultsCacheTTLForOutOfOrderTimeWindow *metav1.Duration `yaml:"results_cache_ttl_for_out_of_order_time_window,omitempty" json:"results_cache_ttl_for_out_of_order_time_window,omitempty" category:"experimental"`
 	// +kubebuilder:validation:Optional
 	MaxQueryExpressionSizeBytes *int `yaml:"max_query_expression_size_bytes,omitempty" json:"max_query_expression_size_bytes,omitempty" category:"experimental"`
 
@@ -125,7 +147,9 @@ type MimirLimits struct {
 
 	// Ruler defaults and limits.
 	// +kubebuilder:validation:Optional
-	RulerEvaluationDelay *model.Duration `yaml:"ruler_evaluation_delay_duration,omitempty" json:"ruler_evaluation_delay_duration,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	RulerEvaluationDelay *metav1.Duration `yaml:"ruler_evaluation_delay_duration,omitempty" json:"ruler_evaluation_delay_duration,omitempty"`
 	// +kubebuilder:validation:Optional
 	RulerTenantShardSize *int `yaml:"ruler_tenant_shard_size,omitempty" json:"ruler_tenant_shard_size,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -143,7 +167,9 @@ type MimirLimits struct {
 
 	// Compactor.
 	// +kubebuilder:validation:Optional
-	CompactorBlocksRetentionPeriod *model.Duration `yaml:"compactor_blocks_retention_period,omitempty" json:"compactor_blocks_retention_period,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	CompactorBlocksRetentionPeriod *metav1.Duration `yaml:"compactor_blocks_retention_period,omitempty" json:"compactor_blocks_retention_period,omitempty"`
 	// +kubebuilder:validation:Optional
 	CompactorSplitAndMergeShards *int `yaml:"compactor_split_and_merge_shards,omitempty" json:"compactor_split_and_merge_shards,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -151,7 +177,9 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	CompactorTenantShardSize *int `yaml:"compactor_tenant_shard_size,omitempty" json:"compactor_tenant_shard_size,omitempty"`
 	// +kubebuilder:validation:Optional
-	CompactorPartialBlockDeletionDelay *model.Duration `yaml:"compactor_partial_block_deletion_delay,omitempty" json:"compactor_partial_block_deletion_delay,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	CompactorPartialBlockDeletionDelay *metav1.Duration `yaml:"compactor_partial_block_deletion_delay,omitempty" json:"compactor_partial_block_deletion_delay,omitempty"`
 	// +kubebuilder:validation:Optional
 	CompactorBlockUploadEnabled *bool `yaml:"compactor_block_upload_enabled,omitempty" json:"compactor_block_upload_enabled,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -196,7 +224,9 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	ForwardingEndpoint *string `yaml:"forwarding_endpoint,omitempty" json:"forwarding_endpoint,omitempty" doc:"nocli|description=Remote-write endpo*int where metrics specified in forwarding_rules are forwarded to. If set, takes precedence over endpoints specified in forwarding rules."`
 	// +kubebuilder:validation:Optional
-	ForwardingDropOlderThan *model.Duration `yaml:"forwarding_drop_older_than,omitempty" json:"forwarding_drop_older_than,omitempty" doc:"nocli|description=If set, forwarding drops samples that are older than this duration. If unset or 0, no samples get dropped."`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	ForwardingDropOlderThan *metav1.Duration `yaml:"forwarding_drop_older_than,omitempty" json:"forwarding_drop_older_than,omitempty" doc:"nocli|description=If set, forwarding drops samples that are older than this duration. If unset or 0, no samples get dropped."`
 	// +kubebuilder:validation:Optional
 	// ForwardingRules are keyed by metric names, excluding labels.
 	ForwardingRules map[string]*ForwardingRule `yaml:"forwarding_rules,omitempty" json:"forwarding_rules,omitempty" doc:"nocli|description=Rules based on which the Distributor decides whether a metric should be forwarded to an alternative remote_write API endpoint."`

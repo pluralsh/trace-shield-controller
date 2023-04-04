@@ -68,6 +68,11 @@ spec:
       request_rate: 4653
       max_queriers_per_tenant: 65
       cardinality_analysis_enabled: false
+      drop_labels:
+      - test
+      - test2
+      accept_ha_samples: true
+      creation_grace_period: 10m
 ---
 apiVersion: observability.traceshield.io/v1alpha1
 kind: Tenant

@@ -80,14 +80,11 @@ spec:
                         type: boolean
                       compactor_blocks_retention_period:
                         description: Compactor.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       compactor_partial_block_deletion_delay:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       compactor_split_and_merge_shards:
                         type: integer
                       compactor_split_groups:
@@ -95,11 +92,8 @@ spec:
                       compactor_tenant_shard_size:
                         type: integer
                       creation_grace_period:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       drop_labels:
                         items:
                           type: string
@@ -107,11 +101,8 @@ spec:
                       enforce_metadata_metric_name:
                         type: boolean
                       forwarding_drop_older_than:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       forwarding_endpoint:
                         type: string
                       forwarding_rules:
@@ -143,11 +134,8 @@ spec:
                       label_values_max_cardinality_label_names_per_request:
                         type: integer
                       max_cache_freshness:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       max_fetched_chunk_bytes_per_query:
                         type: integer
                       max_fetched_chunks_per_query:
@@ -175,35 +163,26 @@ spec:
                       max_label_value_length:
                         type: integer
                       max_labels_query_length:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       max_metadata_length:
                         type: integer
                       max_partial_query_length:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       max_queriers_per_tenant:
                         type: integer
                       max_query_expression_size_bytes:
                         type: integer
                       max_query_lookback:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       max_query_parallelism:
                         type: integer
                       max_total_query_length:
                         description: Query-frontend limits.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       native_histograms_ingestion_enabled:
                         description: Native histograms
                         type: boolean
@@ -220,8 +199,8 @@ spec:
                           counts are not exposed (and removed when they go back to
                           zero)." category:"advanced"` Max allowed time window for
                           out-of-order samples.'
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       query_sharding_max_regexp_size_bytes:
                         type: integer
                       query_sharding_max_sharded_queries:
@@ -234,23 +213,17 @@ spec:
                         description: Distributor enforced limits.
                         type: number
                       results_cache_ttl:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       results_cache_ttl_for_out_of_order_time_window:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       ruler_alerting_rules_evaluation_enabled:
                         type: boolean
                       ruler_evaluation_delay_duration:
                         description: Ruler defaults and limits.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       ruler_max_rule_groups_per_tenant:
                         type: integer
                       ruler_max_rules_per_rule_group:
@@ -273,11 +246,8 @@ spec:
                           specific metrics by another label
                         type: string
                       split_instant_queries_by_interval:
-                        description: Duration wraps time.Duration. It is used to parse
-                          the custom duration format from YAML. This type should not
-                          propagate beyond the scope of input/output processing.
-                        format: int64
-                        type: integer
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
                       store_gateway_tenant_shard_size:
                         description: Store-gateway.
                         type: integer
