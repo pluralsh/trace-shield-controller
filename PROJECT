@@ -18,4 +18,12 @@ resources:
   kind: Tenant
   path: github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1
   version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: traceshield.io
+  group: observability
+  kind: Config
+  path: github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1
+  version: v1alpha1
 version: "3"

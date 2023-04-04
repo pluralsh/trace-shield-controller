@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
 
@@ -32,6 +33,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	observabilityv1alpha1 "github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1"
+	"github.com/pluralsh/trace-shield-controller/clients/keto"
 	observabilitycontroller "github.com/pluralsh/trace-shield-controller/internal/controller/observability"
 	//+kubebuilder:scaffold:imports
 )
@@ -62,9 +64,7 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
-	opts := zap.Options{
-		Development: true,
-	}
+	opts := zap.Options{}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
@@ -94,8 +94,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	conndetails := keto.NewKetoConnectionDetailsFromEnv()
+	ketoClient, err := keto.NewKetoGrpcClient(context.Background(), conndetails)
+	if err != nil {
+		setupLog.Error(err, "Failed to setup Keto gRPC client")
+		os.Exit(1)
+	}
+
 	if err = (&observabilitycontroller.TenantReconciler{
 		Client:          mgr.GetClient(),
+		KetoClient:      ketoClient,
 		Scheme:          mgr.GetScheme(),
 		MimirConfigNs:   mimirConfigMapNs,
 		MimirConfigName: mimirConfigMapName,

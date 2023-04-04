@@ -38,13 +38,16 @@ import (
 
 	// mimir "github.com/grafana/mimir/pkg/util/validation"
 
+	"github.com/go-logr/logr"
 	reconcilehelper "github.com/pluralsh/controller-reconcile-helper/pkg"
 	observabilityv1alpha1 "github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1"
+	"github.com/pluralsh/trace-shield-controller/clients/keto"
 )
 
 // TenantReconciler reconciles a Tenant object
 type TenantReconciler struct {
 	client.Client
+	KetoClient      *keto.KetoGrpcClient
 	Scheme          *runtime.Scheme
 	MimirConfigNs   string
 	MimirConfigName string
@@ -88,25 +91,7 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, err
 	}
 
-	defer func() {
-		tenDat, _ := yaml.Marshal(r.mimirConfigData)
-
-		configmapData := map[string]string{
-			"runtime.yaml": string(tenDat),
-		}
-
-		mimirConfigMap := &corev1.ConfigMap{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      r.MimirConfigName,
-				Namespace: r.MimirConfigNs,
-			},
-			Data: configmapData,
-		}
-
-		if err := reconcilehelper.ConfigMap(ctx, r.Client, mimirConfigMap, log); err != nil {
-			log.Error(err, "Error reconciling ConfigMap", "name", mimirConfigMap.Name)
-		}
-	}()
+	defer r.updateConfigmap(ctx, log)
 
 	// examine DeletionTimestamp to determine if object is under deletion
 	if tenantInstance.ObjectMeta.DeletionTimestamp.IsZero() {
@@ -126,12 +111,15 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 			if err := r.deleteTenantResources(ctx, tenantInstance); err != nil {
 				// if fail to delete the external dependency here, return with error
 				// so that it can be retried
+				log.Error(err, "unable to delete tenant resources", "name", tenantInstance.Name)
 				return ctrl.Result{}, err
 			}
+			log.Info("deleted tenant resources", "name", tenantInstance.Name)
 
 			// remove our finalizer from the list and update it.
 			controllerutil.RemoveFinalizer(tenantInstance, tenantFinalizerName)
 			if err := r.Update(ctx, tenantInstance); err != nil {
+				log.Error(err, "unable to remove finalizer", "name", tenantInstance.Name)
 				return ctrl.Result{}, err
 			}
 		}
@@ -140,17 +128,41 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, nil
 	}
 
-	// r.createTenantInKeto(ctx, tenantInstance)
+	if err := r.KetoClient.CreateObservabilityTenantInKetoIfNotExists(ctx, tenantInstance.Name); err != nil {
+		log.Error(err, "unable to create tenant in keto")
+		return ctrl.Result{}, err
+	}
 
 	r.updateConfigmapData(ctx, tenantInstance)
 
 	return ctrl.Result{}, nil
 }
 
-func (r *TenantReconciler) deleteTenantResources(ctx context.Context, tenant *observabilityv1alpha1.Tenant) error {
-	delete(r.mimirConfigData, tenant.Name)
-	// return r.DeleteTenantInKeto(tenant)
+func (r *TenantReconciler) updateConfigmap(ctx context.Context, log logr.Logger) error {
+	tenDat, _ := yaml.Marshal(r.mimirConfigData)
+
+	configmapData := map[string]string{
+		"runtime.yaml": string(tenDat),
+	}
+
+	mimirConfigMap := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      r.MimirConfigName,
+			Namespace: r.MimirConfigNs,
+		},
+		Data: configmapData,
+	}
+
+	if err := reconcilehelper.ConfigMap(ctx, r.Client, mimirConfigMap, log); err != nil {
+		log.Error(err, "Error reconciling ConfigMap", "name", mimirConfigMap.Name)
+		return err
+	}
 	return nil
+}
+
+func (r *TenantReconciler) deleteTenantResources(ctx context.Context, tenant *observabilityv1alpha1.Tenant) error {
+	delete(r.mimirConfigData["overrides"], tenant.Name)
+	return r.KetoClient.DeleteObservabilityTenantInKeto(ctx, tenant.Name)
 }
 
 func (r *TenantReconciler) updateConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
