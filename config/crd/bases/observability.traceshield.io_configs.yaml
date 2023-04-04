@@ -13,7 +13,7 @@ spec:
     listKind: ConfigList
     plural: configs
     singular: config
-  scope: Namespaced
+  scope: Cluster
   versions:
   - name: v1alpha1
     schema:
@@ -34,6 +34,73 @@ spec:
             type: object
           spec:
             description: ConfigSpec defines the desired state of Config
+            properties:
+              mimir:
+                properties:
+                  config:
+                    properties:
+                      distributor_limits:
+                        properties:
+                          max_inflight_push_requests:
+                            type: integer
+                          max_inflight_push_requests_bytes:
+                            type: integer
+                          max_ingestion_rate:
+                            type: number
+                        type: object
+                      ingester_limits:
+                        properties:
+                          max_inflight_push_requests:
+                            format: int64
+                            type: integer
+                          max_ingestion_rate:
+                            type: number
+                          max_series:
+                            format: int64
+                            type: integer
+                          max_tenants:
+                            format: int64
+                            type: integer
+                        type: object
+                      ingester_stream_chunks_when_using_blocks:
+                        type: boolean
+                      multi_kv_config:
+                        properties:
+                          mirror_enabled:
+                            description: Mirroring enabled or not. Nil = no change.
+                            type: boolean
+                          primary:
+                            description: Primary store used by MultiClient. Can be
+                              updated in runtime to switch to a different store (eg.
+                              consul -> etcd, or to gossip). Doing this allows nice
+                              migration between stores. Empty values are ignored.
+                            type: string
+                        required:
+                        - mirror_enabled
+                        - primary
+                        type: object
+                    type: object
+                  configMap:
+                    properties:
+                      key:
+                        default: runtime.yaml
+                        type: string
+                      name:
+                        default: mimir-runtime
+                        type: string
+                      namespace:
+                        default: mimir
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - configMap
+                type: object
+            required:
+            - mimir
             type: object
           status:
             description: ConfigStatus defines the observed state of Config

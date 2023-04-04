@@ -28,19 +28,69 @@ type ConfigSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Mimir MimirSpec `json:"mimir,omitempty"`
+	// +kubebuilder:validation:Required
+	Mimir MimirSpec `json:"mimir"`
 }
 
 type MimirSpec struct {
-	ConfigMap ConfigMapSelector `json:"configMap,omitempty"`
+	// +kubebuilder:validation:Required
+	ConfigMap ConfigMapSelector `json:"configMap"`
 
-	// Config MimirConfigSpec `json:"config,omitempty"`
+	// +kubebuilder:validation:Optional
+	Config MimirConfigSpec `json:"config,omitempty"`
+}
+
+type MimirConfigSpec struct {
+	// +kubebuilder:validation:Optional
+	Multi MultiRuntimeConfig `json:"multi_kv_config,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	IngesterChunkStreaming *bool `json:"ingester_stream_chunks_when_using_blocks,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	IngesterLimits *MimirIngesterInstanceLimits `json:"ingester_limits,omitempty"`
+	// +kubebuilder:validation:Optional
+	DistributorLimits *MimirDistributorInstanceLimits `json:"distributor_limits,omitempty"`
+}
+
+type MultiRuntimeConfig struct {
+	// Primary store used by MultiClient. Can be updated in runtime to switch to a different store (eg. consul -> etcd,
+	// or to gossip). Doing this allows nice migration between stores. Empty values are ignored.
+	PrimaryStore string `json:"primary"`
+
+	// Mirroring enabled or not. Nil = no change.
+	Mirroring *bool `json:"mirror_enabled"`
+}
+
+type MimirIngesterInstanceLimits struct {
+	// +kubebuilder:validation:Optional
+	MaxIngestionRate float64 `json:"max_ingestion_rate,omitempty"`
+	// +kubebuilder:validation:Optional
+	MaxInMemoryTenants int64 `json:"max_tenants,omitempty"`
+	// +kubebuilder:validation:Optional
+	MaxInMemorySeries int64 `json:"max_series,omitempty"`
+	// +kubebuilder:validation:Optional
+	MaxInflightPushRequests int64 `json:"max_inflight_push_requests,omitempty"`
+}
+
+type MimirDistributorInstanceLimits struct {
+	// +kubebuilder:validation:Optional
+	MaxIngestionRate float64 `json:"max_ingestion_rate,omitempty"`
+	// +kubebuilder:validation:Optional
+	MaxInflightPushRequests int `json:"max_inflight_push_requests,omitempty"`
+	// +kubebuilder:validation:Optional
+	MaxInflightPushRequestsBytes int `json:"max_inflight_push_requests_bytes,omitempty"`
 }
 
 type ConfigMapSelector struct {
-	Name      string `json:"name,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-	Key       string `json:"key,omitempty"`
+	// +kubebuilder:default:="mimir-runtime"
+	Name string `json:"name"`
+
+	// +kubebuilder:default:="mimir"
+	Namespace string `json:"namespace"`
+
+	// +kubebuilder:default:="runtime.yaml"
+	Key string `json:"key"`
 }
 
 // type KetoConfig struct {
@@ -57,6 +107,7 @@ type ConfigStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:path=configs,scope=Cluster
 
 // Config is the Schema for the configs API
 type Config struct {

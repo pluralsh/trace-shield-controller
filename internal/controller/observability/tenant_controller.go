@@ -49,8 +49,7 @@ type TenantReconciler struct {
 	client.Client
 	KetoClient      *keto.KetoGrpcClient
 	Scheme          *runtime.Scheme
-	MimirConfigNs   string
-	MimirConfigName string
+	Config          *observabilityv1alpha1.Config
 	mimirConfigData map[string]map[string]observabilityv1alpha1.MimirLimits
 }
 
@@ -86,12 +85,25 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, ignoreNotFound(err)
 	}
 
-	if err := r.getConfigMap(ctx); err != nil {
+	config := &observabilityv1alpha1.Config{}
+
+	if err := r.Get(ctx, types.NamespacedName{Name: "config"}, config); err != nil {
+		if apierrs.IsNotFound(err) {
+			// log.Info("Unable to fetch Tenant - skipping", "name", tenantInstance.Name)
+			return ctrl.Result{}, nil
+		}
+		log.Error(err, "unable to fetch Observability Config")
+		return ctrl.Result{}, err
+	}
+
+	r.Config = config
+
+	if err := r.getMimirConfigMap(ctx); err != nil {
 		log.Error(err, "unable to fetch Mimir ConfigMap")
 		return ctrl.Result{}, err
 	}
 
-	defer r.updateConfigmap(ctx, log)
+	defer r.updateMimirConfigmap(ctx, log)
 
 	// examine DeletionTimestamp to determine if object is under deletion
 	if tenantInstance.ObjectMeta.DeletionTimestamp.IsZero() {
@@ -133,22 +145,22 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, err
 	}
 
-	r.updateConfigmapData(ctx, tenantInstance)
+	r.updateMimirConfigmapData(ctx, tenantInstance)
 
 	return ctrl.Result{}, nil
 }
 
-func (r *TenantReconciler) updateConfigmap(ctx context.Context, log logr.Logger) error {
+func (r *TenantReconciler) updateMimirConfigmap(ctx context.Context, log logr.Logger) error {
 	tenDat, _ := yaml.Marshal(r.mimirConfigData)
 
 	configmapData := map[string]string{
-		"runtime.yaml": string(tenDat),
+		r.Config.Spec.Mimir.ConfigMap.Key: string(tenDat),
 	}
 
 	mimirConfigMap := &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      r.MimirConfigName,
-			Namespace: r.MimirConfigNs,
+			Name:      r.Config.Spec.Mimir.ConfigMap.Name,
+			Namespace: r.Config.Spec.Mimir.ConfigMap.Namespace,
 		},
 		Data: configmapData,
 	}
@@ -165,19 +177,19 @@ func (r *TenantReconciler) deleteTenantResources(ctx context.Context, tenant *ob
 	return r.KetoClient.DeleteObservabilityTenantInKeto(ctx, tenant.Name)
 }
 
-func (r *TenantReconciler) updateConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
+func (r *TenantReconciler) updateMimirConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
 	if _, ok := r.mimirConfigData["overrides"]; !ok {
 		r.mimirConfigData["overrides"] = make(map[string]observabilityv1alpha1.MimirLimits)
 	}
 	r.mimirConfigData["overrides"][tenant.Name] = tenant.Spec.Limits.Mimir
 }
 
-func (r *TenantReconciler) getConfigMap(ctx context.Context) error {
+func (r *TenantReconciler) getMimirConfigMap(ctx context.Context) error {
 	existingConfigmap := &corev1.ConfigMap{}
 
 	currentTenantData := map[string]map[string]observabilityv1alpha1.MimirLimits{}
 
-	err := r.Get(ctx, types.NamespacedName{Name: r.MimirConfigName, Namespace: r.MimirConfigNs}, existingConfigmap)
+	err := r.Get(ctx, types.NamespacedName{Name: r.Config.Spec.Mimir.ConfigMap.Name, Namespace: r.Config.Spec.Mimir.ConfigMap.Namespace}, existingConfigmap)
 	if err != nil {
 		// TODO: handle error properly
 		// if apierrs.IsNotFound(err) {
@@ -189,7 +201,7 @@ func (r *TenantReconciler) getConfigMap(ctx context.Context) error {
 	}
 
 	if existingConfigmap.Data != nil {
-		if tenantData, ok := existingConfigmap.Data["runtime.yaml"]; ok {
+		if tenantData, ok := existingConfigmap.Data[r.Config.Spec.Mimir.ConfigMap.Key]; ok {
 			yaml.Unmarshal([]byte(tenantData), &currentTenantData)
 		} else {
 			// TODO: handle error properly
@@ -218,15 +230,27 @@ func (r *TenantReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		// 	},
 		// }).
 		Watches(
-			&source.Kind{Type: &corev1.ConfigMap{}},
+			&source.Kind{Type: &corev1.ConfigMap{}}, // TODO: change this watch to limit to the configmaps we care about
 			handler.EnqueueRequestsFromMapFunc(r.findObjectsForConfigMap),
 			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
+		).
+		Watches(
+			&source.Kind{Type: &observabilityv1alpha1.Config{}},
+			handler.EnqueueRequestsFromMapFunc(r.findObjectsForConfigMap),
 		).
 		Complete(r)
 }
 
 func (r *TenantReconciler) findObjectsForConfigMap(configMap client.Object) []reconcile.Request {
-	if configMap.GetName() == r.MimirConfigName && configMap.GetNamespace() == r.MimirConfigNs { //TODO: expand to Loki and Mimir as well
+	if err := r.Get(context.TODO(), types.NamespacedName{Name: "config"}, r.Config); err != nil {
+		if apierrs.IsNotFound(err) {
+			// log.Info("Unable to fetch Tenant - skipping", "name", tenantInstance.Name)
+			return []reconcile.Request{}
+		}
+		return []reconcile.Request{}
+	}
+
+	if configMap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace { //TODO: expand to Loki and Mimir as well
 		tenantList := &observabilityv1alpha1.TenantList{}
 		err := r.List(context.TODO(), tenantList, &client.ListOptions{})
 		if err != nil {
