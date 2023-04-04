@@ -30,8 +30,9 @@ type TenantLister interface {
 	// List lists all Tenants in the indexer.
 	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.Tenant, err error)
-	// Tenants returns an object that can list and get Tenants.
-	Tenants(namespace string) TenantNamespaceLister
+	// Get retrieves the Tenant from the index for a given name.
+	// Objects returned here must be treated as read-only.
+	Get(name string) (*v1alpha1.Tenant, error)
 	TenantListerExpansion
 }
 
@@ -53,41 +54,9 @@ func (s *tenantLister) List(selector labels.Selector) (ret []*v1alpha1.Tenant, e
 	return ret, err
 }
 
-// Tenants returns an object that can list and get Tenants.
-func (s *tenantLister) Tenants(namespace string) TenantNamespaceLister {
-	return tenantNamespaceLister{indexer: s.indexer, namespace: namespace}
-}
-
-// TenantNamespaceLister helps list and get Tenants.
-// All objects returned here must be treated as read-only.
-type TenantNamespaceLister interface {
-	// List lists all Tenants in the indexer for a given namespace.
-	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1alpha1.Tenant, err error)
-	// Get retrieves the Tenant from the indexer for a given namespace and name.
-	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1alpha1.Tenant, error)
-	TenantNamespaceListerExpansion
-}
-
-// tenantNamespaceLister implements the TenantNamespaceLister
-// interface.
-type tenantNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all Tenants in the indexer for a given namespace.
-func (s tenantNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.Tenant, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.Tenant))
-	})
-	return ret, err
-}
-
-// Get retrieves the Tenant from the indexer for a given namespace and name.
-func (s tenantNamespaceLister) Get(name string) (*v1alpha1.Tenant, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
+// Get retrieves the Tenant from the index for a given name.
+func (s *tenantLister) Get(name string) (*v1alpha1.Tenant, error) {
+	obj, exists, err := s.indexer.GetByKey(name)
 	if err != nil {
 		return nil, err
 	}

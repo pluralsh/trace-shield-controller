@@ -21,14 +21,6 @@ package v1alpha1
 // ConfigLister.
 type ConfigListerExpansion interface{}
 
-// ConfigNamespaceListerExpansion allows custom methods to be added to
-// ConfigNamespaceLister.
-type ConfigNamespaceListerExpansion interface{}
-
 // TenantListerExpansion allows custom methods to be added to
 // TenantLister.
 type TenantListerExpansion interface{}
-
-// TenantNamespaceListerExpansion allows custom methods to be added to
-// TenantNamespaceLister.
-type TenantNamespaceListerExpansion interface{}

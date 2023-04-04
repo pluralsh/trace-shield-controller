@@ -27,12 +27,12 @@ type FakeObservabilityV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeObservabilityV1alpha1) Configs(namespace string) v1alpha1.ConfigInterface {
-	return &FakeConfigs{c, namespace}
+func (c *FakeObservabilityV1alpha1) Configs() v1alpha1.ConfigInterface {
+	return &FakeConfigs{c}
 }
 
-func (c *FakeObservabilityV1alpha1) Tenants(namespace string) v1alpha1.TenantInterface {
-	return &FakeTenants{c, namespace}
+func (c *FakeObservabilityV1alpha1) Tenants() v1alpha1.TenantInterface {
+	return &FakeTenants{c}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

@@ -36,12 +36,12 @@ type ObservabilityV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *ObservabilityV1alpha1Client) Configs(namespace string) ConfigInterface {
-	return newConfigs(c, namespace)
+func (c *ObservabilityV1alpha1Client) Configs() ConfigInterface {
+	return newConfigs(c)
 }
 
-func (c *ObservabilityV1alpha1Client) Tenants(namespace string) TenantInterface {
-	return newTenants(c, namespace)
+func (c *ObservabilityV1alpha1Client) Tenants() TenantInterface {
+	return newTenants(c)
 }
 
 // NewForConfig creates a new ObservabilityV1alpha1Client for the given config.

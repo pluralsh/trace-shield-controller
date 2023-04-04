@@ -110,6 +110,7 @@ type ConfigStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:path=configs,scope=Cluster
 
+// +genclient:nonNamespaced
 // Config is the Schema for the configs API
 type Config struct {
 	metav1.TypeMeta   `json:",inline"`

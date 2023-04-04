@@ -42,10 +42,10 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // Configs returns a ConfigInformer.
 func (v *version) Configs() ConfigInformer {
-	return &configInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+	return &configInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
 // Tenants returns a TenantInformer.
 func (v *version) Tenants() TenantInformer {
-	return &tenantInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+	return &tenantInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
