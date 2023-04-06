@@ -182,7 +182,7 @@ func (r *TenantReconciler) updateMimirConfigmapData(ctx context.Context, tenant 
 	if _, ok := r.mimirConfigData["overrides"]; !ok {
 		r.mimirConfigData["overrides"] = make(map[string]observabilityv1alpha1.MimirLimits)
 	}
-	if tenant.Spec.Limits.Mimir != nil {
+	if tenant.Spec.Limits != nil && tenant.Spec.Limits.Mimir != nil {
 		r.mimirConfigData["overrides"][tenant.Name] = *tenant.Spec.Limits.Mimir
 	}
 }
