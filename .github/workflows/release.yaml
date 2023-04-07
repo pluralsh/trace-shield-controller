@@ -1,0 +1,24 @@
+name: CD
+on:
+  push:
+    branches:
+      - main
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.PLURAL_BOT_PAT }}
+    - name: 'Setup Node'
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.12.1
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v3
+      env:
+        GITHUB_TOKEN: ${{ secrets.PLURAL_BOT_PAT }}
+        NODE_AUTH_TOKEN: ${{ secrets.PLURAL_BOT_NPM_TOKEN }}
