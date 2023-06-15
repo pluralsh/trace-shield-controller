@@ -12,9 +12,9 @@ require (
 	github.com/prometheus/common v0.42.0
 	golang.org/x/oauth2 v0.6.0
 	google.golang.org/grpc v1.53.0
-	k8s.io/api v0.26.2
-	k8s.io/apimachinery v0.26.2
-	k8s.io/client-go v0.26.2
+	k8s.io/api v0.26.6
+	k8s.io/apimachinery v0.26.6
+	k8s.io/client-go v0.26.6
 	sigs.k8s.io/controller-runtime v0.14.4
 	sigs.k8s.io/yaml v1.3.0
 )
