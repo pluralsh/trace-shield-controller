@@ -3,7 +3,7 @@ module github.com/pluralsh/trace-shield-controller
 go 1.19
 
 require (
-	github.com/go-logr/logr v1.2.3
+	github.com/go-logr/logr v1.2.4
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
 	github.com/ory/keto/proto v0.11.1-alpha.0
