@@ -7,7 +7,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
 	github.com/ory/keto/proto v0.11.1-alpha.0
-	github.com/ory/x v0.0.547
+	github.com/ory/x v0.0.568
 	github.com/pluralsh/controller-reconcile-helper v0.0.4
 	github.com/prometheus/common v0.42.0
 	golang.org/x/oauth2 v0.6.0
