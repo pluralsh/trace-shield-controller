@@ -32,14 +32,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	"sigs.k8s.io/yaml"
 
 	// mimir "github.com/grafana/mimir/pkg/util/validation"
 
 	"github.com/go-logr/logr"
-	reconcilehelper "github.com/pluralsh/controller-reconcile-helper/pkg"
+	reconcilehelper "github.com/pluralsh/controller-reconcile-helper/pkg/reconcile-helper/core"
 	observabilityv1alpha1 "github.com/pluralsh/trace-shield-controller/api/observability/v1alpha1"
 	"github.com/pluralsh/trace-shield-controller/clients/keto"
 )
@@ -233,19 +232,19 @@ func (r *TenantReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		// 	},
 		// }).
 		Watches(
-			&source.Kind{Type: &corev1.ConfigMap{}}, // TODO: change this watch to limit to the configmaps we care about
+			&corev1.ConfigMap{}, // TODO: change this watch to limit to the configmaps we care about
 			handler.EnqueueRequestsFromMapFunc(r.findObjectsForConfigMap),
 			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
 		).
 		Watches(
-			&source.Kind{Type: &observabilityv1alpha1.Config{}},
+			&observabilityv1alpha1.Config{},
 			handler.EnqueueRequestsFromMapFunc(r.findObjectsForConfigMap),
 		).
 		Complete(r)
 }
 
-func (r *TenantReconciler) findObjectsForConfigMap(configMap client.Object) []reconcile.Request {
-	if err := r.Get(context.TODO(), types.NamespacedName{Name: "config"}, r.Config); err != nil {
+func (r *TenantReconciler) findObjectsForConfigMap(ctx context.Context, configMap client.Object) []reconcile.Request {
+	if err := r.Get(ctx, types.NamespacedName{Name: "config"}, r.Config); err != nil {
 		if apierrs.IsNotFound(err) {
 			// log.Info("Unable to fetch Tenant - skipping", "name", tenantInstance.Name)
 			return []reconcile.Request{}
@@ -255,7 +254,7 @@ func (r *TenantReconciler) findObjectsForConfigMap(configMap client.Object) []re
 
 	if configMap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace { //TODO: expand to Loki and Mimir as well
 		tenantList := &observabilityv1alpha1.TenantList{}
-		err := r.List(context.TODO(), tenantList, &client.ListOptions{})
+		err := r.List(ctx, tenantList, &client.ListOptions{})
 		if err != nil {
 			return []reconcile.Request{}
 		}
