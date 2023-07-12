@@ -34,6 +34,61 @@ spec:
           spec:
             description: ConfigSpec defines the desired state of Config
             properties:
+              loki:
+                properties:
+                  config:
+                    properties:
+                      configs:
+                        additionalProperties:
+                          properties:
+                            limited_log_push_errors:
+                              description: LimitedLogPushErrors is to be implemented
+                                and will allow logging push failures at a controlled
+                                pace.
+                              type: boolean
+                            log_push_request:
+                              type: boolean
+                            log_push_request_streams:
+                              type: boolean
+                            log_stream_creation:
+                              type: boolean
+                          type: object
+                        type: object
+                      multi_kv_config:
+                        properties:
+                          mirror_enabled:
+                            description: Mirroring enabled or not. Nil = no change.
+                            type: boolean
+                          primary:
+                            description: Primary store used by MultiClient. Can be
+                              updated in runtime to switch to a different store (eg.
+                              consul -> etcd, or to gossip). Doing this allows nice
+                              migration between stores. Empty values are ignored.
+                            type: string
+                        required:
+                        - mirror_enabled
+                        - primary
+                        type: object
+                    type: object
+                  configMap:
+                    properties:
+                      key:
+                        default: runtime.yaml
+                        type: string
+                      name:
+                        default: mimir-runtime
+                        type: string
+                      namespace:
+                        default: mimir
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - configMap
+                type: object
               mimir:
                 properties:
                   config:
@@ -98,8 +153,31 @@ spec:
                 required:
                 - configMap
                 type: object
+              tempo:
+                properties:
+                  configMap:
+                    properties:
+                      key:
+                        default: runtime.yaml
+                        type: string
+                      name:
+                        default: mimir-runtime
+                        type: string
+                      namespace:
+                        default: mimir
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - configMap
+                type: object
             required:
+            - loki
             - mimir
+            - tempo
             type: object
           status:
             description: ConfigStatus defines the observed state of Config

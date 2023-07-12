@@ -252,7 +252,9 @@ func (r *TenantReconciler) findObjectsForConfigMap(ctx context.Context, configMa
 		return []reconcile.Request{}
 	}
 
-	if configMap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace { //TODO: expand to Loki and Mimir as well
+	if (configMap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace) ||
+		(configMap.GetName() == r.Config.Spec.Loki.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Loki.ConfigMap.Namespace) ||
+		(configMap.GetName() == r.Config.Spec.Tempo.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Tempo.ConfigMap.Namespace) {
 		tenantList := &observabilityv1alpha1.TenantList{}
 		err := r.List(ctx, tenantList, &client.ListOptions{})
 		if err != nil {
