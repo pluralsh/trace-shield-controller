@@ -1220,6 +1220,158 @@ spec:
                         description: Store-gateway.
                         type: integer
                     type: object
+                  tempo:
+                    properties:
+                      block_retention:
+                        description: Compactor enforced limits.
+                        type: string
+                      forwarders:
+                        description: Forwarders
+                        items:
+                          type: string
+                        type: array
+                      ingestion_burst_size_bytes:
+                        type: integer
+                      ingestion_rate_limit_bytes:
+                        type: integer
+                      ingestion_rate_strategy:
+                        description: Distributor enforced limits.
+                        type: string
+                      max_blocks_per_tag_values_query:
+                        type: integer
+                      max_bytes_per_tag_values_query:
+                        description: Querier and Ingester enforced limits.
+                        type: integer
+                      max_bytes_per_trace:
+                        description: MaxBytesPerTrace is enforced in the Ingester,
+                          Compactor, Querier (Search) and Serverless (Search). It
+                          is not used when doing a trace by id lookup.
+                        type: integer
+                      max_global_traces_per_user:
+                        type: integer
+                      max_search_duration:
+                        description: QueryFrontend enforced limits
+                        type: string
+                      max_traces_per_user:
+                        description: Ingester enforced limits.
+                        type: integer
+                      metrics_generator_collection_interval:
+                        type: string
+                      metrics_generator_disable_collection:
+                        type: boolean
+                      metrics_generator_forwarder_queue_size:
+                        type: integer
+                      metrics_generator_forwarder_workers:
+                        type: integer
+                      metrics_generator_max_active_series:
+                        format: int32
+                        type: integer
+                      metrics_generator_processor_local_blocks_complete_block_timeout:
+                        type: string
+                      metrics_generator_processor_local_blocks_flush_check_period:
+                        type: string
+                      metrics_generator_processor_local_blocks_max_block_bytes:
+                        format: int64
+                        type: integer
+                      metrics_generator_processor_local_blocks_max_block_duration:
+                        type: string
+                      metrics_generator_processor_local_blocks_max_live_traces:
+                        format: int64
+                        type: integer
+                      metrics_generator_processor_local_blocks_trace_idle_period:
+                        type: string
+                      metrics_generator_processor_service_graphs_dimensions:
+                        items:
+                          type: string
+                        type: array
+                      metrics_generator_processor_service_graphs_enable_client_server_prefix:
+                        type: boolean
+                      metrics_generator_processor_service_graphs_histogram_buckets:
+                        items:
+                          type: number
+                        type: array
+                      metrics_generator_processor_service_graphs_peer_attributes:
+                        items:
+                          type: string
+                        type: array
+                      metrics_generator_processor_span_metrics_dimension_mapings:
+                        items:
+                          properties:
+                            join:
+                              type: string
+                            name:
+                              type: string
+                            source_labels:
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        type: array
+                      metrics_generator_processor_span_metrics_dimensions:
+                        items:
+                          type: string
+                        type: array
+                      metrics_generator_processor_span_metrics_enable_target_info:
+                        type: boolean
+                      metrics_generator_processor_span_metrics_filter_policies:
+                        items:
+                          properties:
+                            exclude:
+                              properties:
+                                attributes:
+                                  items:
+                                    properties:
+                                      key:
+                                        type: string
+                                      value:
+                                        type: object
+                                        x-kubernetes-preserve-unknown-fields: true
+                                    type: object
+                                  type: array
+                                match_type:
+                                  enum:
+                                  - strict
+                                  - regex
+                                  type: string
+                              type: object
+                            include:
+                              properties:
+                                attributes:
+                                  items:
+                                    properties:
+                                      key:
+                                        type: string
+                                      value:
+                                        type: object
+                                        x-kubernetes-preserve-unknown-fields: true
+                                    type: object
+                                  type: array
+                                match_type:
+                                  enum:
+                                  - strict
+                                  - regex
+                                  type: string
+                              type: object
+                          type: object
+                        type: array
+                      metrics_generator_processor_span_metrics_histogram_buckets:
+                        items:
+                          type: number
+                        type: array
+                      metrics_generator_processor_span_metrics_intrinsic_dimensions:
+                        additionalProperties:
+                          type: boolean
+                        type: object
+                      metrics_generator_processors:
+                        description: 'TODO: ensure the list only contains service-graphs
+                          and span-metrics'
+                        items:
+                          type: string
+                        type: array
+                      metrics_generator_ring_size:
+                        description: Metrics-generator config
+                        type: integer
+                    type: object
                 type: object
             type: object
           status:
