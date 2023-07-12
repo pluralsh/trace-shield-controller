@@ -144,6 +144,138 @@ spec:
                         description: Global and per tenant retention
                         pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
+                      ruler_alertmanager_config:
+                        properties:
+                          alert_relabel_configs:
+                            description: Configuration for alert relabeling.
+                            items:
+                              description: 'RelabelConfig allows dynamic rewriting
+                                of the label set, being applied to samples before
+                                ingestion. It defines `<metric_relabel_configs>`-section
+                                of Prometheus configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs'
+                              properties:
+                                action:
+                                  default: replace
+                                  description: Action to perform based on regex matching.
+                                    Default is 'replace'. uppercase and lowercase
+                                    actions require Prometheus >= 2.36.
+                                  enum:
+                                  - replace
+                                  - Replace
+                                  - keep
+                                  - Keep
+                                  - drop
+                                  - Drop
+                                  - hashmod
+                                  - HashMod
+                                  - labelmap
+                                  - LabelMap
+                                  - labeldrop
+                                  - LabelDrop
+                                  - labelkeep
+                                  - LabelKeep
+                                  - lowercase
+                                  - Lowercase
+                                  - uppercase
+                                  - Uppercase
+                                  - keepequal
+                                  - KeepEqual
+                                  - dropequal
+                                  - DropEqual
+                                  type: string
+                                modulus:
+                                  description: Modulus to take of the hash of the
+                                    source label values.
+                                  format: int64
+                                  type: integer
+                                regex:
+                                  description: Regular expression against which the
+                                    extracted value is matched. Default is '(.*)'
+                                  type: string
+                                replacement:
+                                  description: Replacement value against which a regex
+                                    replace is performed if the regular expression
+                                    matches. Regex capture groups are available. Default
+                                    is '$1'
+                                  type: string
+                                separator:
+                                  description: Separator placed between concatenated
+                                    source label values. default is ';'.
+                                  type: string
+                                sourceLabels:
+                                  description: The source labels select values from
+                                    existing labels. Their content is concatenated
+                                    using the configured separator and matched against
+                                    the configured regular expression for the replace,
+                                    keep, and drop actions.
+                                  items:
+                                    description: LabelName is a valid Prometheus label
+                                      name which may only contain ASCII letters, numbers,
+                                      as well as underscores.
+                                    pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+                                    type: string
+                                  type: array
+                                targetLabel:
+                                  description: Label to which the resulting value
+                                    is written in a replace action. It is mandatory
+                                    for replace actions. Regex capture groups are
+                                    available.
+                                  type: string
+                              type: object
+                            type: array
+                          alertmanager_client:
+                            description: Client configs for interacting with the Alertmanager
+                            properties:
+                              basic_auth_password:
+                                type: string
+                              basic_auth_username:
+                                type: string
+                              credentials:
+                                type: string
+                              credentials_file:
+                                type: string
+                              tls_ca_path:
+                                type: string
+                              tls_cert_path:
+                                type: string
+                              tls_cipher_suites:
+                                type: string
+                              tls_insecure_skip_verify:
+                                type: boolean
+                              tls_key_path:
+                                type: string
+                              tls_min_version:
+                                type: string
+                              tls_server_name:
+                                type: string
+                              type:
+                                type: string
+                            type: object
+                          alertmanager_refresh_interval:
+                            description: How long to wait between refreshing the list
+                              of Alertmanager based on DNS service discovery.
+                            type: string
+                          alertmanager_url:
+                            description: URL of the Alertmanager to send notifications
+                              to.
+                            type: string
+                          enable_alertmanager_discovery:
+                            description: Whether to use DNS SRV records to discover
+                              Alertmanager.
+                            type: boolean
+                          enable_alertmanager_v2:
+                            description: Enables the ruler notifier to use the Alertmananger
+                              V2 API.
+                            type: boolean
+                          notification_queue_capacity:
+                            description: Capacity of the queue for notifications to
+                              be sent to the Alertmanager.
+                            type: integer
+                          notification_timeout:
+                            description: HTTP timeout duration when sending notifications
+                              to the Alertmanager.
+                            type: string
+                        type: object
                       ruler_evaluation_delay_duration:
                         description: 'TODO(dannyk): this setting is misnamed and probably
                           deprecatable.'
@@ -168,9 +300,6 @@ spec:
                           to know if the value was explicitly set or default
                         type: boolean
                       ruler_tenant_shard_size:
-                        description: 'TODO: fix type RulerAlertManagerConfig     *ruler_config.AlertManagerConfig
-                          `yaml:"ruler_alertmanager_config,omitempty" json:"ruler_alertmanager_config,omitempty"
-                          doc:"hidden"`'
                         type: integer
                       split_queries_by_interval:
                         description: Query frontend enforced limits. The default is
