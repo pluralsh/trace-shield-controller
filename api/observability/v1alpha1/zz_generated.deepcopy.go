@@ -23,6 +23,7 @@ package v1alpha1
 
 import (
 	"github.com/pluralsh/controller-reconcile-helper/pkg/types"
+	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -307,6 +308,11 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 		*out = new(int)
 		**out = **in
 	}
+	if in.MaxNativeHistogramBuckets != nil {
+		in, out := &in.MaxNativeHistogramBuckets, &out.MaxNativeHistogramBuckets
+		*out = new(int)
+		**out = **in
+	}
 	if in.CreationGracePeriod != nil {
 		in, out := &in.CreationGracePeriod, &out.CreationGracePeriod
 		*out = new(v1.Duration)
@@ -321,6 +327,13 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 		in, out := &in.IngestionTenantShardSize, &out.IngestionTenantShardSize
 		*out = new(int)
 		**out = **in
+	}
+	if in.MetricRelabelConfigs != nil {
+		in, out := &in.MetricRelabelConfigs, &out.MetricRelabelConfigs
+		*out = make([]monitoringv1.RelabelConfig, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.MaxGlobalSeriesPerUser != nil {
 		in, out := &in.MaxGlobalSeriesPerUser, &out.MaxGlobalSeriesPerUser
@@ -351,6 +364,13 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 		in, out := &in.NativeHistogramsIngestionEnabled, &out.NativeHistogramsIngestionEnabled
 		*out = new(bool)
 		**out = **in
+	}
+	if in.ActiveSeriesCustomTrackersConfig != nil {
+		in, out := &in.ActiveSeriesCustomTrackersConfig, &out.ActiveSeriesCustomTrackersConfig
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	if in.OutOfOrderTimeWindow != nil {
 		in, out := &in.OutOfOrderTimeWindow, &out.OutOfOrderTimeWindow
@@ -432,6 +452,11 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.QueryIngestersWithin != nil {
+		in, out := &in.QueryIngestersWithin, &out.QueryIngestersWithin
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	if in.MaxTotalQueryLength != nil {
 		in, out := &in.MaxTotalQueryLength, &out.MaxTotalQueryLength
 		*out = new(v1.Duration)
@@ -445,6 +470,21 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	if in.ResultsCacheTTLForOutOfOrderTimeWindow != nil {
 		in, out := &in.ResultsCacheTTLForOutOfOrderTimeWindow, &out.ResultsCacheTTLForOutOfOrderTimeWindow
 		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ResultsCacheTTLForCardinalityQuery != nil {
+		in, out := &in.ResultsCacheTTLForCardinalityQuery, &out.ResultsCacheTTLForCardinalityQuery
+		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ResultsCacheTTLForLabelsQuery != nil {
+		in, out := &in.ResultsCacheTTLForLabelsQuery, &out.ResultsCacheTTLForLabelsQuery
+		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ResultsCacheForUnalignedQueryEnabled != nil {
+		in, out := &in.ResultsCacheForUnalignedQueryEnabled, &out.ResultsCacheForUnalignedQueryEnabled
+		*out = new(bool)
 		**out = **in
 	}
 	if in.MaxQueryExpressionSizeBytes != nil {
@@ -497,6 +537,11 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.RulerSyncRulesOnChangesEnabled != nil {
+		in, out := &in.RulerSyncRulesOnChangesEnabled, &out.RulerSyncRulesOnChangesEnabled
+		*out = new(bool)
+		**out = **in
+	}
 	if in.StoreGatewayTenantShardSize != nil {
 		in, out := &in.StoreGatewayTenantShardSize, &out.StoreGatewayTenantShardSize
 		*out = new(int)
@@ -540,6 +585,11 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	if in.CompactorBlockUploadVerifyChunks != nil {
 		in, out := &in.CompactorBlockUploadVerifyChunks, &out.CompactorBlockUploadVerifyChunks
 		*out = new(bool)
+		**out = **in
+	}
+	if in.CompactorBlockUploadMaxBlockSizeBytes != nil {
+		in, out := &in.CompactorBlockUploadMaxBlockSizeBytes, &out.CompactorBlockUploadMaxBlockSizeBytes
+		*out = new(int64)
 		**out = **in
 	}
 	if in.S3SSEType != nil {
@@ -616,31 +666,6 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 		in, out := &in.AlertmanagerMaxAlertsSizeBytes, &out.AlertmanagerMaxAlertsSizeBytes
 		*out = new(int)
 		**out = **in
-	}
-	if in.ForwardingEndpoint != nil {
-		in, out := &in.ForwardingEndpoint, &out.ForwardingEndpoint
-		*out = new(string)
-		**out = **in
-	}
-	if in.ForwardingDropOlderThan != nil {
-		in, out := &in.ForwardingDropOlderThan, &out.ForwardingDropOlderThan
-		*out = new(v1.Duration)
-		**out = **in
-	}
-	if in.ForwardingRules != nil {
-		in, out := &in.ForwardingRules, &out.ForwardingRules
-		*out = make(map[string]*ForwardingRule, len(*in))
-		for key, val := range *in {
-			var outVal *ForwardingRule
-			if val == nil {
-				(*out)[key] = nil
-			} else {
-				in, out := &val, &outVal
-				*out = new(ForwardingRule)
-				(*in).DeepCopyInto(*out)
-			}
-			(*out)[key] = outVal
-		}
 	}
 }
 
@@ -728,6 +753,11 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 		*out = new(int)
 		**out = **in
 	}
+	if in.MaxNativeHistogramBuckets != nil {
+		in, out := &in.MaxNativeHistogramBuckets, &out.MaxNativeHistogramBuckets
+		*out = new(int)
+		**out = **in
+	}
 	if in.CreationGracePeriod != nil {
 		in, out := &in.CreationGracePeriod, &out.CreationGracePeriod
 		*out = new(v1.Duration)
@@ -742,6 +772,13 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 		in, out := &in.IngestionTenantShardSize, &out.IngestionTenantShardSize
 		*out = new(int)
 		**out = **in
+	}
+	if in.MetricRelabelConfigs != nil {
+		in, out := &in.MetricRelabelConfigs, &out.MetricRelabelConfigs
+		*out = make([]monitoringv1.RelabelConfig, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.MaxGlobalSeriesPerUser != nil {
 		in, out := &in.MaxGlobalSeriesPerUser, &out.MaxGlobalSeriesPerUser
@@ -772,6 +809,13 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 		in, out := &in.NativeHistogramsIngestionEnabled, &out.NativeHistogramsIngestionEnabled
 		*out = new(bool)
 		**out = **in
+	}
+	if in.ActiveSeriesCustomTrackersConfig != nil {
+		in, out := &in.ActiveSeriesCustomTrackersConfig, &out.ActiveSeriesCustomTrackersConfig
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	if in.OutOfOrderTimeWindow != nil {
 		in, out := &in.OutOfOrderTimeWindow, &out.OutOfOrderTimeWindow
@@ -853,6 +897,11 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.QueryIngestersWithin != nil {
+		in, out := &in.QueryIngestersWithin, &out.QueryIngestersWithin
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	if in.MaxTotalQueryLength != nil {
 		in, out := &in.MaxTotalQueryLength, &out.MaxTotalQueryLength
 		*out = new(v1.Duration)
@@ -866,6 +915,21 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 	if in.ResultsCacheTTLForOutOfOrderTimeWindow != nil {
 		in, out := &in.ResultsCacheTTLForOutOfOrderTimeWindow, &out.ResultsCacheTTLForOutOfOrderTimeWindow
 		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ResultsCacheTTLForCardinalityQuery != nil {
+		in, out := &in.ResultsCacheTTLForCardinalityQuery, &out.ResultsCacheTTLForCardinalityQuery
+		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ResultsCacheTTLForLabelsQuery != nil {
+		in, out := &in.ResultsCacheTTLForLabelsQuery, &out.ResultsCacheTTLForLabelsQuery
+		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ResultsCacheForUnalignedQueryEnabled != nil {
+		in, out := &in.ResultsCacheForUnalignedQueryEnabled, &out.ResultsCacheForUnalignedQueryEnabled
+		*out = new(bool)
 		**out = **in
 	}
 	if in.MaxQueryExpressionSizeBytes != nil {
@@ -918,6 +982,11 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.RulerSyncRulesOnChangesEnabled != nil {
+		in, out := &in.RulerSyncRulesOnChangesEnabled, &out.RulerSyncRulesOnChangesEnabled
+		*out = new(bool)
+		**out = **in
+	}
 	if in.StoreGatewayTenantShardSize != nil {
 		in, out := &in.StoreGatewayTenantShardSize, &out.StoreGatewayTenantShardSize
 		*out = new(int)
@@ -961,6 +1030,11 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 	if in.CompactorBlockUploadVerifyChunks != nil {
 		in, out := &in.CompactorBlockUploadVerifyChunks, &out.CompactorBlockUploadVerifyChunks
 		*out = new(bool)
+		**out = **in
+	}
+	if in.CompactorBlockUploadMaxBlockSizeBytes != nil {
+		in, out := &in.CompactorBlockUploadMaxBlockSizeBytes, &out.CompactorBlockUploadMaxBlockSizeBytes
+		*out = new(int64)
 		**out = **in
 	}
 	if in.S3SSEType != nil {
@@ -1037,31 +1111,6 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 		in, out := &in.AlertmanagerMaxAlertsSizeBytes, &out.AlertmanagerMaxAlertsSizeBytes
 		*out = new(int)
 		**out = **in
-	}
-	if in.ForwardingEndpoint != nil {
-		in, out := &in.ForwardingEndpoint, &out.ForwardingEndpoint
-		*out = new(string)
-		**out = **in
-	}
-	if in.ForwardingDropOlderThan != nil {
-		in, out := &in.ForwardingDropOlderThan, &out.ForwardingDropOlderThan
-		*out = new(v1.Duration)
-		**out = **in
-	}
-	if in.ForwardingRules != nil {
-		in, out := &in.ForwardingRules, &out.ForwardingRules
-		*out = make(map[string]*ForwardingRule, len(*in))
-		for key, val := range *in {
-			var outVal *ForwardingRule
-			if val == nil {
-				(*out)[key] = nil
-			} else {
-				in, out := &val, &outVal
-				*out = new(ForwardingRule)
-				(*in).DeepCopyInto(*out)
-			}
-			(*out)[key] = outVal
-		}
 	}
 }
 
