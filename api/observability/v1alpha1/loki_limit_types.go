@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	prom_v1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -119,46 +118,6 @@ type LokiLimits struct {
 	// +kubebuilder:validation:Optional
 	RulerRemoteWriteDisabled *bool `yaml:"ruler_remote_write_disabled,omitempty" json:"ruler_remote_write_disabled,omitempty" doc:"description=Disable recording rules remote-write."`
 
-	// deprecated use RulerRemoteWriteConfig instead.
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteURL *string `yaml:"ruler_remote_write_url,omitempty" json:"ruler_remote_write_url,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. The URL of the endpoint to send samples to."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteTimeout *metav1.Duration `yaml:"ruler_remote_write_timeout,omitempty" json:"ruler_remote_write_timeout,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Timeout for requests to the remote write endpoint."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	//TODO: fix type RulerRemoteWriteHeaders OverwriteMarshalingStringMap `yaml:"ruler_remote_write_headers,omitempty" json:"ruler_remote_write_headers,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Custom HTTP headers to be sent along with each remote write request. Be aware that headers that are set by Loki itself can't be overwritten."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteRelabelConfigs []*prom_v1.RelabelConfig `yaml:"ruler_remote_write_relabel_configs,omitempty" json:"ruler_remote_write_relabel_configs,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. List of remote write relabel configurations."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueCapacity *int `yaml:"ruler_remote_write_queue_capacity,omitempty" json:"ruler_remote_write_queue_capacity,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Number of samples to buffer per shard before we block reading of more samples from the WAL. It is recommended to have enough capacity in each shard to buffer several requests to keep throughput up while processing occasional slow remote requests."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueMinShards *int `yaml:"ruler_remote_write_queue_min_shards,omitempty" json:"ruler_remote_write_queue_min_shards,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Minimum number of shards, i.e. amount of concurrency."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueMaxShards *int `yaml:"ruler_remote_write_queue_max_shards,omitempty" json:"ruler_remote_write_queue_max_shards,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Maximum number of shards, i.e. amount of concurrency."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueMaxSamplesPerSend *int `yaml:"ruler_remote_write_queue_max_samples_per_send,omitempty" json:"ruler_remote_write_queue_max_samples_per_send,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Maximum number of samples per send."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueBatchSendDeadline *metav1.Duration `yaml:"ruler_remote_write_queue_batch_send_deadline,omitempty" json:"ruler_remote_write_queue_batch_send_deadline,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Maximum time a sample will wait in buffer."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueMinBackoff *metav1.Duration `yaml:"ruler_remote_write_queue_min_backoff,omitempty" json:"ruler_remote_write_queue_min_backoff,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Initial retry delay. Gets doubled for every retry."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueMaxBackoff *metav1.Duration `yaml:"ruler_remote_write_queue_max_backoff,omitempty" json:"ruler_remote_write_queue_max_backoff,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Maximum retry delay."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	RulerRemoteWriteQueueRetryOnRateLimit *bool `yaml:"ruler_remote_write_queue_retry_on_ratelimit,omitempty" json:"ruler_remote_write_queue_retry_on_ratelimit,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Retry upon receiving a 429 status code from the remote-write storage. This is experimental and might change in the future."`
-	// deprecated use RulerRemoteWriteConfig instead
-	// +kubebuilder:validation:Optional
-	//TODO: fix type RulerRemoteWriteSigV4Config *sigv4.SigV4Config `yaml:"ruler_remote_write_sigv4_config,omitempty" json:"ruler_remote_write_sigv4_config,omitempty" doc:"deprecated|description=Use 'ruler_remote_write_config' instead. Configures AWS's Signature Verification 4 signing process to sign every remote write request."`
-
 	// +kubebuilder:validation:Optional
 	// TODO: fix type RulerRemoteWriteConfig map[string]config.RemoteWriteConfig `yaml:"ruler_remote_write_config,omitempty" json:"ruler_remote_write_config,omitempty" doc:"description=Configures global and per-tenant limits for remote write clients. A map with remote client id as key."`
 
@@ -177,16 +136,6 @@ type LokiLimits struct {
 	RetentionPeriod *metav1.Duration `yaml:"retention_period,omitempty" json:"retention_period,omitempty"`
 	// +kubebuilder:validation:Optional
 	// TODO: fix type StreamRetention []StreamRetention `yaml:"retention_stream,omitempty" json:"retention_stream,omitempty" doc:"description=Per-stream retention to apply, if the retention is enable on the compactor side.\nExample:\n retention_stream:\n - selector: '{namespace=\"dev\"}'\n priority: 1\n period: 24h\n- selector: '{container=\"nginx\"}'\n priority: 1\n period: 744h\nSelector is a Prometheus labels matchers that will apply the 'period' retention only if the stream is matching. In case multiple stream are matching, the highest priority will be picked. If no rule is matched the 'retention_period' is used."`
-
-	// Config for overrides, convenient if it goes here.
-	// +kubebuilder:validation:Optional
-	// TODO: likely deprecated PerTenantOverrideConfig *string `yaml:"per_tenant_override_config,omitempty" json:"per_tenant_override_config,omitempty"`
-	// +kubebuilder:validation:Optional
-	// TODO: likely deprecatedPerTenantOverridePeriod *metav1.Duration `yaml:"per_tenant_override_period,omitempty" json:"per_tenant_override_period,omitempty"`
-
-	// Deprecated
-	// +kubebuilder:validation:Optional
-	CompactorDeletionEnabled *bool `yaml:"allow_deletes,omitempty" json:"allow_deletes,omitempty" doc:"deprecated|description=Use deletion_mode per tenant configuration instead."`
 
 	// +kubebuilder:validation:Optional
 	// TODO: fix type ShardStreams *shardstreams.Config `yaml:"shard_streams,omitempty" json:"shard_streams,omitempty"`
