@@ -42,6 +42,9 @@ type LimitSpec struct {
 
 	// +kubebuilder:validation:Optional
 	Mimir *MimirLimits `json:"mimir,omitempty"`
+
+	// +kubebuilder:validation:Optional
+	Loki *LokiLimits `json:"loki,omitempty"`
 }
 
 // TenantStatus defines the observed state of Tenant
