@@ -178,16 +178,11 @@ spec:
                           alert_relabel_configs:
                             description: Configuration for alert relabeling.
                             items:
-                              description: 'RelabelConfig allows dynamic rewriting
-                                of the label set, being applied to samples before
-                                ingestion. It defines `<metric_relabel_configs>`-section
-                                of Prometheus configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs'
                               properties:
                                 action:
                                   default: replace
-                                  description: Action to perform based on regex matching.
-                                    Default is 'replace'. uppercase and lowercase
-                                    actions require Prometheus >= 2.36.
+                                  description: Action is the action to be performed
+                                    for the relabeling.
                                   enum:
                                   - replace
                                   - Replace
@@ -213,30 +208,26 @@ spec:
                                   - DropEqual
                                   type: string
                                 modulus:
-                                  description: Modulus to take of the hash of the
-                                    source label values.
+                                  description: Modulus to take of the hash of concatenated
+                                    values from the source labels.
                                   format: int64
                                   type: integer
                                 regex:
-                                  description: Regular expression against which the
-                                    extracted value is matched. Default is '(.*)'
+                                  description: Regex against which the concatenation
+                                    is matched.
                                   type: string
                                 replacement:
-                                  description: Replacement value against which a regex
-                                    replace is performed if the regular expression
-                                    matches. Regex capture groups are available. Default
-                                    is '$1'
+                                  description: Replacement is the regex replacement
+                                    pattern to be used.
                                   type: string
                                 separator:
-                                  description: Separator placed between concatenated
-                                    source label values. default is ';'.
+                                  description: Separator is the string between concatenated
+                                    values from the source labels.
                                   type: string
-                                sourceLabels:
-                                  description: The source labels select values from
-                                    existing labels. Their content is concatenated
-                                    using the configured separator and matched against
-                                    the configured regular expression for the replace,
-                                    keep, and drop actions.
+                                source_labels:
+                                  description: A list of labels from which values
+                                    are taken and concatenated with the configured
+                                    separator in order.
                                   items:
                                     description: LabelName is a valid Prometheus label
                                       name which may only contain ASCII letters, numbers,
@@ -244,11 +235,11 @@ spec:
                                     pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
                                     type: string
                                   type: array
-                                targetLabel:
-                                  description: Label to which the resulting value
-                                    is written in a replace action. It is mandatory
-                                    for replace actions. Regex capture groups are
-                                    available.
+                                target_label:
+                                  description: TargetLabel is the label to which the
+                                    resulting string is written in a replacement.
+                                    Regexp interpolation is allowed for the replace
+                                    action.
                                   type: string
                               type: object
                             type: array
@@ -283,6 +274,7 @@ spec:
                           alertmanager_refresh_interval:
                             description: How long to wait between refreshing the list
                               of Alertmanager based on DNS service discovery.
+                            pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                             type: string
                           alertmanager_url:
                             description: URL of the Alertmanager to send notifications
@@ -303,6 +295,7 @@ spec:
                           notification_timeout:
                             description: HTTP timeout duration when sending notifications
                               to the Alertmanager.
+                            pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                             type: string
                         type: object
                       ruler_evaluation_delay_duration:
@@ -324,513 +317,287 @@ spec:
                         type: string
                       ruler_remote_write_config:
                         additionalProperties:
-                          description: RemoteWriteSpec defines the configuration to
-                            write samples from Prometheus to a remote endpoint.
                           properties:
                             authorization:
-                              description: "Authorization section for the URL. \n
-                                It requires Prometheus >= v2.26.0. \n Cannot be set
-                                at the same time as `sigv4`, `basicAuth`, or `oauth2`."
+                              description: The HTTP authorization credentials for
+                                the targets.
                               properties:
                                 credentials:
-                                  description: The secret's key that contains the
-                                    credentials of the request
-                                  properties:
-                                    key:
-                                      description: The key of the secret to select
-                                        from.  Must be a valid secret key.
-                                      type: string
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                    optional:
-                                      description: Specify whether the Secret or its
-                                        key must be defined
-                                      type: boolean
-                                  required:
-                                  - key
-                                  type: object
-                                  x-kubernetes-map-type: atomic
-                                credentialsFile:
-                                  description: File to read a secret from, mutually
-                                    exclusive with Credentials (from SafeAuthorization)
+                                  description: Secret special type for storing secrets.
+                                  type: string
+                                credentials_file:
                                   type: string
                                 type:
-                                  description: Set the authentication type. Defaults
-                                    to Bearer, Basic will cause an error
                                   type: string
                               type: object
-                            basicAuth:
-                              description: "BasicAuth configuration for the URL. \n
-                                Cannot be set at the same time as `sigv4`, `authorization`,
-                                or `oauth2`."
+                            basic_auth:
+                              description: The HTTP basic authentication credentials
+                                for the targets.
                               properties:
                                 password:
-                                  description: The secret in the service monitor namespace
-                                    that contains the password for authentication.
-                                  properties:
-                                    key:
-                                      description: The key of the secret to select
-                                        from.  Must be a valid secret key.
-                                      type: string
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                    optional:
-                                      description: Specify whether the Secret or its
-                                        key must be defined
-                                      type: boolean
-                                  required:
-                                  - key
-                                  type: object
-                                  x-kubernetes-map-type: atomic
+                                  description: Secret special type for storing secrets.
+                                  type: string
+                                password_file:
+                                  type: string
                                 username:
-                                  description: The secret in the service monitor namespace
-                                    that contains the username for authentication.
-                                  properties:
-                                    key:
-                                      description: The key of the secret to select
-                                        from.  Must be a valid secret key.
-                                      type: string
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                    optional:
-                                      description: Specify whether the Secret or its
-                                        key must be defined
-                                      type: boolean
-                                  required:
-                                  - key
-                                  type: object
-                                  x-kubernetes-map-type: atomic
+                                  type: string
+                              required:
+                              - username
                               type: object
-                            bearerToken:
-                              description: "*Warning: this field shouldn't used because
-                                the token value appears in clear-text. Prefer using
-                                `authorization`.* \n *Deprecated: this will be removed
-                                in a future release.*"
-                              type: string
-                            bearerTokenFile:
-                              description: "File from which to read bearer token for
-                                the URL. \n *Deprecated: this will be removed in a
-                                future release. Prefer using `authorization`.*"
-                              type: string
+                            enable_http2:
+                              description: EnableHTTP2 specifies whether the client
+                                should configure HTTP2. The omitempty flag is not
+                                set, because it would be hidden from the marshalled
+                                configuration when set to false.
+                              type: boolean
+                            follow_redirects:
+                              description: FollowRedirects specifies whether the client
+                                should follow HTTP 3xx redirects. The omitempty flag
+                                is not set, because it would be hidden from the marshalled
+                                configuration when set to false.
+                              type: boolean
                             headers:
                               additionalProperties:
                                 type: string
-                              description: "Custom HTTP headers to be sent along with
-                                each remote write request. Be aware that headers that
-                                are set by Prometheus itself can't be overwritten.
-                                \n It requires Prometheus >= v2.25.0."
                               type: object
-                            metadataConfig:
-                              description: MetadataConfig configures the sending of
-                                series metadata to the remote storage.
+                            metadata_config:
+                              description: MetadataConfig is the configuration for
+                                sending metadata to remote storage.
                               properties:
+                                max_samples_per_send:
+                                  description: Maximum number of samples per send.
+                                  type: integer
                                 send:
-                                  description: Whether metric metadata is sent to
-                                    the remote storage or not.
+                                  description: Send controls whether we send metric
+                                    metadata to remote storage.
                                   type: boolean
-                                sendInterval:
-                                  description: How frequently metric metadata is sent
-                                    to the remote storage.
-                                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                                send_interval:
+                                  description: SendInterval controls how frequently
+                                    we send metric metadata.
+                                  pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                                   type: string
                               type: object
                             name:
-                              description: "The name of the remote write queue, it
-                                must be unique if specified. The name is used in metrics
-                                and logging in order to differentiate queues. \n It
-                                requires Prometheus >= v2.15.0."
+                              type: string
+                            no_proxy:
+                              description: NoProxy contains addresses that should
+                                not use a proxy.
                               type: string
                             oauth2:
-                              description: "OAuth2 configuration for the URL. \n It
-                                requires Prometheus >= v2.27.0. \n Cannot be set at
-                                the same time as `sigv4`, `authorization`, or `basicAuth`."
+                              description: The OAuth2 client credentials used to fetch
+                                a token for the targets.
                               properties:
-                                clientId:
-                                  description: The secret or configmap containing
-                                    the OAuth2 client id
-                                  properties:
-                                    configMap:
-                                      description: ConfigMap containing data to use
-                                        for the targets.
-                                      properties:
-                                        key:
-                                          description: The key to select.
-                                          type: string
-                                        name:
-                                          description: 'Name of the referent. More
-                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                            TODO: Add other useful fields. apiVersion,
-                                            kind, uid?'
-                                          type: string
-                                        optional:
-                                          description: Specify whether the ConfigMap
-                                            or its key must be defined
-                                          type: boolean
-                                      required:
-                                      - key
-                                      type: object
-                                      x-kubernetes-map-type: atomic
-                                    secret:
-                                      description: Secret containing data to use for
-                                        the targets.
-                                      properties:
-                                        key:
-                                          description: The key of the secret to select
-                                            from.  Must be a valid secret key.
-                                          type: string
-                                        name:
-                                          description: 'Name of the referent. More
-                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                            TODO: Add other useful fields. apiVersion,
-                                            kind, uid?'
-                                          type: string
-                                        optional:
-                                          description: Specify whether the Secret
-                                            or its key must be defined
-                                          type: boolean
-                                      required:
-                                      - key
-                                      type: object
-                                      x-kubernetes-map-type: atomic
-                                  type: object
-                                clientSecret:
-                                  description: The secret containing the OAuth2 client
-                                    secret
-                                  properties:
-                                    key:
-                                      description: The key of the secret to select
-                                        from.  Must be a valid secret key.
-                                      type: string
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                    optional:
-                                      description: Specify whether the Secret or its
-                                        key must be defined
-                                      type: boolean
-                                  required:
-                                  - key
-                                  type: object
-                                  x-kubernetes-map-type: atomic
-                                endpointParams:
+                                client_id:
+                                  type: string
+                                client_secret:
+                                  description: Secret special type for storing secrets.
+                                  type: string
+                                client_secret_file:
+                                  type: string
+                                endpoint_params:
                                   additionalProperties:
                                     type: string
-                                  description: Parameters to append to the token URL
                                   type: object
+                                no_proxy:
+                                  description: NoProxy contains addresses that should
+                                    not use a proxy.
+                                  type: string
+                                proxy_connect_header:
+                                  additionalProperties:
+                                    items:
+                                      description: Secret special type for storing
+                                        secrets.
+                                      type: string
+                                    type: array
+                                  description: ProxyConnectHeader optionally specifies
+                                    headers to send to proxies during CONNECT requests.
+                                    Assume that at least _some_ of these headers are
+                                    going to contain secrets and use Secret as the
+                                    value type instead of string.
+                                  type: object
+                                proxy_from_environment:
+                                  description: ProxyFromEnvironment makes use of net/http
+                                    ProxyFromEnvironment function to determine proxies.
+                                  type: boolean
+                                proxy_url:
+                                  description: HTTP proxy server to use to connect
+                                    to the targets.
+                                  type: string
                                 scopes:
-                                  description: OAuth2 scopes used for the token request
                                   items:
                                     type: string
                                   type: array
-                                tokenUrl:
-                                  description: The URL to fetch the token from
-                                  minLength: 1
+                                tls_config:
+                                  description: TLSConfig configures the options for
+                                    TLS connections.
+                                  properties:
+                                    ca:
+                                      description: Text of the CA cert to use for
+                                        the targets.
+                                      type: string
+                                    ca_file:
+                                      description: The CA cert to use for the targets.
+                                      type: string
+                                    cert:
+                                      description: Text of the client cert file for
+                                        the targets.
+                                      type: string
+                                    cert_file:
+                                      description: The client cert file for the targets.
+                                      type: string
+                                    insecure_skip_verify:
+                                      description: Disable target certificate validation.
+                                      type: boolean
+                                    key:
+                                      description: Text of the client key file for
+                                        the targets.
+                                      type: string
+                                    key_file:
+                                      description: The client key file for the targets.
+                                      type: string
+                                    max_version:
+                                      description: Maximum TLS version.
+                                      type: integer
+                                    min_version:
+                                      description: Minimum TLS version.
+                                      type: integer
+                                    server_name:
+                                      description: Used to verify the hostname for
+                                        the targets.
+                                      type: string
+                                  required:
+                                  - insecure_skip_verify
+                                  type: object
+                                token_url:
                                   type: string
                               required:
-                              - clientId
-                              - clientSecret
-                              - tokenUrl
+                              - client_id
                               type: object
-                            proxyUrl:
-                              description: Optional ProxyURL.
+                            proxy_connect_header:
+                              additionalProperties:
+                                items:
+                                  description: Secret special type for storing secrets.
+                                  type: string
+                                type: array
+                              description: ProxyConnectHeader optionally specifies
+                                headers to send to proxies during CONNECT requests.
+                                Assume that at least _some_ of these headers are going
+                                to contain secrets and use Secret as the value type
+                                instead of string.
+                              type: object
+                            proxy_from_environment:
+                              description: ProxyFromEnvironment makes use of net/http
+                                ProxyFromEnvironment function to determine proxies.
+                              type: boolean
+                            proxy_url:
+                              description: HTTP proxy server to use to connect to
+                                the targets.
                               type: string
-                            queueConfig:
-                              description: QueueConfig allows tuning of the remote
-                                write queue parameters.
+                            queue_config:
                               properties:
-                                batchSendDeadline:
-                                  description: BatchSendDeadline is the maximum time
-                                    a sample will wait in buffer.
+                                batch_send_deadline:
+                                  description: Maximum time sample will wait in buffer.
+                                  pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                                   type: string
                                 capacity:
-                                  description: Capacity is the number of samples to
-                                    buffer per shard before we start dropping them.
+                                  description: Number of samples to buffer per shard
+                                    before we block. Defaults to MaxSamplesPerSend.
                                   type: integer
-                                maxBackoff:
-                                  description: MaxBackoff is the maximum retry delay.
+                                max_backoff:
+                                  pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                                   type: string
-                                maxRetries:
-                                  description: MaxRetries is the maximum number of
-                                    times to retry a batch on recoverable errors.
+                                max_samples_per_send:
+                                  description: Maximum number of samples per send.
                                   type: integer
-                                maxSamplesPerSend:
-                                  description: MaxSamplesPerSend is the maximum number
-                                    of samples per send.
+                                max_shards:
+                                  description: Max number of shards, i.e. amount of
+                                    concurrency.
                                   type: integer
-                                maxShards:
-                                  description: MaxShards is the maximum number of
-                                    shards, i.e. amount of concurrency.
-                                  type: integer
-                                minBackoff:
-                                  description: MinBackoff is the initial retry delay.
-                                    Gets doubled for every retry.
+                                min_backoff:
+                                  description: On recoverable errors, backoff exponentially.
+                                  pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                                   type: string
-                                minShards:
-                                  description: MinShards is the minimum number of
-                                    shards, i.e. amount of concurrency.
+                                min_shards:
+                                  description: Min number of shards, i.e. amount of
+                                    concurrency.
                                   type: integer
-                                retryOnRateLimit:
-                                  description: Retry upon receiving a 429 status code
-                                    from the remote-write storage. This is experimental
-                                    feature and might change in the future.
+                                retry_on_http_429:
                                   type: boolean
                               type: object
-                            remoteTimeout:
-                              description: Timeout for requests to the remote write
-                                endpoint.
-                              pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                            remote_timeout:
+                              pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                               type: string
-                            sendExemplars:
-                              description: "Enables sending of exemplars over remote
-                                write. Note that exemplar-storage itself must be enabled
-                                using the `spec.enableFeature` option for exemplars
-                                to be scraped in the first place. \n It requires Prometheus
-                                >= v2.27.0."
+                            send_exemplars:
                               type: boolean
-                            sendNativeHistograms:
-                              description: "Enables sending of native histograms,
-                                also known as sparse histograms over remote write.
-                                \n It requires Prometheus >= v2.40.0."
+                            send_native_histograms:
                               type: boolean
                             sigv4:
-                              description: "Sigv4 allows to configures AWS's Signature
-                                Verification 4 for the URL. \n It requires Prometheus
-                                >= v2.26.0. \n Cannot be set at the same time as `authorization`,
-                                `basicAuth`, or `oauth2`."
+                              description: SigV4Config is the configuration for signing
+                                remote write requests with AWS's SigV4 verification
+                                process. Empty values will be retrieved using the
+                                AWS default credentials chain.
                               properties:
-                                accessKey:
-                                  description: AccessKey is the AWS API key. If not
-                                    specified, the environment variable `AWS_ACCESS_KEY_ID`
-                                    is used.
-                                  properties:
-                                    key:
-                                      description: The key of the secret to select
-                                        from.  Must be a valid secret key.
-                                      type: string
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                    optional:
-                                      description: Specify whether the Secret or its
-                                        key must be defined
-                                      type: boolean
-                                  required:
-                                  - key
-                                  type: object
-                                  x-kubernetes-map-type: atomic
+                                access_key:
+                                  type: string
                                 profile:
-                                  description: Profile is the named AWS profile used
-                                    to authenticate.
                                   type: string
                                 region:
-                                  description: Region is the AWS region. If blank,
-                                    the region from the default credentials chain
-                                    used.
                                   type: string
-                                roleArn:
-                                  description: RoleArn is the named AWS profile used
-                                    to authenticate.
+                                role_arn:
                                   type: string
-                                secretKey:
-                                  description: SecretKey is the AWS API secret. If
-                                    not specified, the environment variable `AWS_SECRET_ACCESS_KEY`
-                                    is used.
-                                  properties:
-                                    key:
-                                      description: The key of the secret to select
-                                        from.  Must be a valid secret key.
-                                      type: string
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                    optional:
-                                      description: Specify whether the Secret or its
-                                        key must be defined
-                                      type: boolean
-                                  required:
-                                  - key
-                                  type: object
-                                  x-kubernetes-map-type: atomic
+                                secret_key:
+                                  description: Secret special type for storing secrets.
+                                  type: string
                               type: object
-                            tlsConfig:
-                              description: TLS Config to use for the URL.
+                            tls_config:
+                              description: TLSConfig to use to connect to the targets.
                               properties:
                                 ca:
-                                  description: Certificate authority used when verifying
-                                    server certificates.
-                                  properties:
-                                    configMap:
-                                      description: ConfigMap containing data to use
-                                        for the targets.
-                                      properties:
-                                        key:
-                                          description: The key to select.
-                                          type: string
-                                        name:
-                                          description: 'Name of the referent. More
-                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                            TODO: Add other useful fields. apiVersion,
-                                            kind, uid?'
-                                          type: string
-                                        optional:
-                                          description: Specify whether the ConfigMap
-                                            or its key must be defined
-                                          type: boolean
-                                      required:
-                                      - key
-                                      type: object
-                                      x-kubernetes-map-type: atomic
-                                    secret:
-                                      description: Secret containing data to use for
-                                        the targets.
-                                      properties:
-                                        key:
-                                          description: The key of the secret to select
-                                            from.  Must be a valid secret key.
-                                          type: string
-                                        name:
-                                          description: 'Name of the referent. More
-                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                            TODO: Add other useful fields. apiVersion,
-                                            kind, uid?'
-                                          type: string
-                                        optional:
-                                          description: Specify whether the Secret
-                                            or its key must be defined
-                                          type: boolean
-                                      required:
-                                      - key
-                                      type: object
-                                      x-kubernetes-map-type: atomic
-                                  type: object
-                                caFile:
-                                  description: Path to the CA cert in the Prometheus
-                                    container to use for the targets.
+                                  description: Text of the CA cert to use for the
+                                    targets.
+                                  type: string
+                                ca_file:
+                                  description: The CA cert to use for the targets.
                                   type: string
                                 cert:
-                                  description: Client certificate to present when
-                                    doing client-authentication.
-                                  properties:
-                                    configMap:
-                                      description: ConfigMap containing data to use
-                                        for the targets.
-                                      properties:
-                                        key:
-                                          description: The key to select.
-                                          type: string
-                                        name:
-                                          description: 'Name of the referent. More
-                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                            TODO: Add other useful fields. apiVersion,
-                                            kind, uid?'
-                                          type: string
-                                        optional:
-                                          description: Specify whether the ConfigMap
-                                            or its key must be defined
-                                          type: boolean
-                                      required:
-                                      - key
-                                      type: object
-                                      x-kubernetes-map-type: atomic
-                                    secret:
-                                      description: Secret containing data to use for
-                                        the targets.
-                                      properties:
-                                        key:
-                                          description: The key of the secret to select
-                                            from.  Must be a valid secret key.
-                                          type: string
-                                        name:
-                                          description: 'Name of the referent. More
-                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                            TODO: Add other useful fields. apiVersion,
-                                            kind, uid?'
-                                          type: string
-                                        optional:
-                                          description: Specify whether the Secret
-                                            or its key must be defined
-                                          type: boolean
-                                      required:
-                                      - key
-                                      type: object
-                                      x-kubernetes-map-type: atomic
-                                  type: object
-                                certFile:
-                                  description: Path to the client cert file in the
-                                    Prometheus container for the targets.
+                                  description: Text of the client cert file for the
+                                    targets.
                                   type: string
-                                insecureSkipVerify:
+                                cert_file:
+                                  description: The client cert file for the targets.
+                                  type: string
+                                insecure_skip_verify:
                                   description: Disable target certificate validation.
                                   type: boolean
-                                keyFile:
-                                  description: Path to the client key file in the
-                                    Prometheus container for the targets.
+                                key:
+                                  description: Text of the client key file for the
+                                    targets.
                                   type: string
-                                keySecret:
-                                  description: Secret containing the client key file
-                                    for the targets.
-                                  properties:
-                                    key:
-                                      description: The key of the secret to select
-                                        from.  Must be a valid secret key.
-                                      type: string
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                    optional:
-                                      description: Specify whether the Secret or its
-                                        key must be defined
-                                      type: boolean
-                                  required:
-                                  - key
-                                  type: object
-                                  x-kubernetes-map-type: atomic
-                                serverName:
+                                key_file:
+                                  description: The client key file for the targets.
+                                  type: string
+                                max_version:
+                                  description: Maximum TLS version.
+                                  type: integer
+                                min_version:
+                                  description: Minimum TLS version.
+                                  type: integer
+                                server_name:
                                   description: Used to verify the hostname for the
                                     targets.
                                   type: string
+                              required:
+                              - insecure_skip_verify
                               type: object
                             url:
-                              description: The URL of the endpoint to send samples
-                                to.
                               type: string
-                            writeRelabelConfigs:
-                              description: The list of remote write relabel configurations.
+                            write_relabel_configs:
                               items:
-                                description: 'RelabelConfig allows dynamic rewriting
-                                  of the label set, being applied to samples before
-                                  ingestion. It defines `<metric_relabel_configs>`-section
-                                  of Prometheus configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs'
                                 properties:
                                   action:
                                     default: replace
-                                    description: Action to perform based on regex
-                                      matching. Default is 'replace'. uppercase and
-                                      lowercase actions require Prometheus >= 2.36.
+                                    description: Action is the action to be performed
+                                      for the relabeling.
                                     enum:
                                     - replace
                                     - Replace
@@ -856,30 +623,26 @@ spec:
                                     - DropEqual
                                     type: string
                                   modulus:
-                                    description: Modulus to take of the hash of the
-                                      source label values.
+                                    description: Modulus to take of the hash of concatenated
+                                      values from the source labels.
                                     format: int64
                                     type: integer
                                   regex:
-                                    description: Regular expression against which
-                                      the extracted value is matched. Default is '(.*)'
+                                    description: Regex against which the concatenation
+                                      is matched.
                                     type: string
                                   replacement:
-                                    description: Replacement value against which a
-                                      regex replace is performed if the regular expression
-                                      matches. Regex capture groups are available.
-                                      Default is '$1'
+                                    description: Replacement is the regex replacement
+                                      pattern to be used.
                                     type: string
                                   separator:
-                                    description: Separator placed between concatenated
-                                      source label values. default is ';'.
+                                    description: Separator is the string between concatenated
+                                      values from the source labels.
                                     type: string
-                                  sourceLabels:
-                                    description: The source labels select values from
-                                      existing labels. Their content is concatenated
-                                      using the configured separator and matched against
-                                      the configured regular expression for the replace,
-                                      keep, and drop actions.
+                                  source_labels:
+                                    description: A list of labels from which values
+                                      are taken and concatenated with the configured
+                                      separator in order.
                                     items:
                                       description: LabelName is a valid Prometheus
                                         label name which may only contain ASCII letters,
@@ -887,20 +650,18 @@ spec:
                                       pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
                                       type: string
                                     type: array
-                                  targetLabel:
-                                    description: Label to which the resulting value
-                                      is written in a replace action. It is mandatory
-                                      for replace actions. Regex capture groups are
-                                      available.
+                                  target_label:
+                                    description: TargetLabel is the label to which
+                                      the resulting string is written in a replacement.
+                                      Regexp interpolation is allowed for the replace
+                                      action.
                                     type: string
                                 type: object
                               type: array
                           required:
                           - url
                           type: object
-                        description: 'TODO: we''ll need to use the prometheus operator
-                          config generator to properly load and set the yaml with
-                          values from secrets, etc'
+                          x-kubernetes-preserve-unknown-fields: true
                         type: object
                       ruler_remote_write_disabled:
                         description: this field is the inversion of the general remote_write.enabled
@@ -1078,16 +839,11 @@ spec:
                         type: string
                       metric_relabel_configs:
                         items:
-                          description: 'RelabelConfig allows dynamic rewriting of
-                            the label set, being applied to samples before ingestion.
-                            It defines `<metric_relabel_configs>`-section of Prometheus
-                            configuration. More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs'
                           properties:
                             action:
                               default: replace
-                              description: Action to perform based on regex matching.
-                                Default is 'replace'. uppercase and lowercase actions
-                                require Prometheus >= 2.36.
+                              description: Action is the action to be performed for
+                                the relabeling.
                               enum:
                               - replace
                               - Replace
@@ -1113,28 +869,26 @@ spec:
                               - DropEqual
                               type: string
                             modulus:
-                              description: Modulus to take of the hash of the source
-                                label values.
+                              description: Modulus to take of the hash of concatenated
+                                values from the source labels.
                               format: int64
                               type: integer
                             regex:
-                              description: Regular expression against which the extracted
-                                value is matched. Default is '(.*)'
+                              description: Regex against which the concatenation is
+                                matched.
                               type: string
                             replacement:
-                              description: Replacement value against which a regex
-                                replace is performed if the regular expression matches.
-                                Regex capture groups are available. Default is '$1'
+                              description: Replacement is the regex replacement pattern
+                                to be used.
                               type: string
                             separator:
-                              description: Separator placed between concatenated source
-                                label values. default is ';'.
+                              description: Separator is the string between concatenated
+                                values from the source labels.
                               type: string
-                            sourceLabels:
-                              description: The source labels select values from existing
-                                labels. Their content is concatenated using the configured
-                                separator and matched against the configured regular
-                                expression for the replace, keep, and drop actions.
+                            source_labels:
+                              description: A list of labels from which values are
+                                taken and concatenated with the configured separator
+                                in order.
                               items:
                                 description: LabelName is a valid Prometheus label
                                   name which may only contain ASCII letters, numbers,
@@ -1142,10 +896,10 @@ spec:
                                 pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
                                 type: string
                               type: array
-                            targetLabel:
-                              description: Label to which the resulting value is written
-                                in a replace action. It is mandatory for replace actions.
-                                Regex capture groups are available.
+                            target_label:
+                              description: TargetLabel is the label to which the resulting
+                                string is written in a replacement. Regexp interpolation
+                                is allowed for the replace action.
                               type: string
                           type: object
                         type: array
@@ -1224,6 +978,7 @@ spec:
                     properties:
                       block_retention:
                         description: Compactor enforced limits.
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
                       forwarders:
                         description: Forwarders
@@ -1251,11 +1006,13 @@ spec:
                         type: integer
                       max_search_duration:
                         description: QueryFrontend enforced limits
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
                       max_traces_per_user:
                         description: Ingester enforced limits.
                         type: integer
                       metrics_generator_collection_interval:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
                       metrics_generator_disable_collection:
                         type: boolean
@@ -1267,18 +1024,22 @@ spec:
                         format: int32
                         type: integer
                       metrics_generator_processor_local_blocks_complete_block_timeout:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
                       metrics_generator_processor_local_blocks_flush_check_period:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
                       metrics_generator_processor_local_blocks_max_block_bytes:
                         format: int64
                         type: integer
                       metrics_generator_processor_local_blocks_max_block_duration:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
                       metrics_generator_processor_local_blocks_max_live_traces:
                         format: int64
                         type: integer
                       metrics_generator_processor_local_blocks_trace_idle_period:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
                         type: string
                       metrics_generator_processor_service_graphs_dimensions:
                         items:

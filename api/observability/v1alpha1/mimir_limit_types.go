@@ -2,7 +2,6 @@ package v1alpha1
 
 import (
 	crhelperTypes "github.com/pluralsh/controller-reconcile-helper/pkg/types"
-	prom_v1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -45,7 +44,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	IngestionTenantShardSize *int `yaml:"ingestion_tenant_shard_size,omitempty" json:"ingestion_tenant_shard_size,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricRelabelConfigs []prom_v1.RelabelConfig `yaml:"metric_relabel_configs,omitempty" json:"metric_relabel_configs,omitempty" doc:"nocli|description=List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs." category:"experimental"`
+	MetricRelabelConfigs []RelabelConfig `yaml:"metric_relabel_configs,omitempty" json:"metric_relabel_configs,omitempty" doc:"nocli|description=List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs." category:"experimental"`
 
 	// Ingester enforced limits.
 	// Series

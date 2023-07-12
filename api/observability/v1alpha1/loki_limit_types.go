@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	prom_v1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -142,8 +141,7 @@ type LokiLimits struct {
 	RulerRemoteWriteDisabled *bool `yaml:"ruler_remote_write_disabled,omitempty" json:"ruler_remote_write_disabled,omitempty" doc:"description=Disable recording rules remote-write."`
 
 	// +kubebuilder:validation:Optional
-	// TODO: we'll need to use the prometheus operator config generator to properly load and set the yaml with values from secrets, etc
-	RulerRemoteWriteConfig map[string]prom_v1.RemoteWriteSpec `yaml:"ruler_remote_write_config,omitempty" json:"ruler_remote_write_config,omitempty" doc:"description=Configures global and per-tenant limits for remote write clients. A map with remote client id as key."`
+	RulerRemoteWriteConfig map[string]RemoteWriteSpec `yaml:"ruler_remote_write_config,omitempty" json:"ruler_remote_write_config,omitempty" doc:"description=Configures global and per-tenant limits for remote write clients. A map with remote client id as key."`
 
 	// TODO(dannyk): possible enhancement is to align this with rule group interval
 	// +kubebuilder:validation:Optional
@@ -217,18 +215,22 @@ type RulerAlertManagerConfig struct {
 	AlertmanagerDiscovery *bool `yaml:"enable_alertmanager_discovery,omitempty" json:"enable_alertmanager_discovery,omitempty"`
 	// How long to wait between refreshing the list of Alertmanager based on DNS service discovery.
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	AlertmanagerRefreshInterval *metav1.Duration `yaml:"alertmanager_refresh_interval,omitempty" json:"alertmanager_refresh_interval,omitempty"`
 	// Enables the ruler notifier to use the Alertmananger V2 API.
 	// +kubebuilder:validation:Optional
 	AlertmanangerEnableV2API bool `yaml:"enable_alertmanager_v2,omitempty" json:"enable_alertmanager_v2,omitempty"`
 	// Configuration for alert relabeling.
-	// +kubebuilder:validation:Optional
-	AlertRelabelConfigs []*prom_v1.RelabelConfig `yaml:"alert_relabel_configs,omitempty" json:"alert_relabel_configs,omitempty" doc:"description=List of alert relabel configs."`
+	// +kubebuilder:validation:Optional // TODO: remove all references to this to our own type since the yaml tags will be different
+	AlertRelabelConfigs []*RelabelConfig `yaml:"alert_relabel_configs,omitempty" json:"alert_relabel_configs,omitempty" doc:"description=List of alert relabel configs."`
 	// Capacity of the queue for notifications to be sent to the Alertmanager.
 	// +kubebuilder:validation:Optional
 	NotificationQueueCapacity int `yaml:"notification_queue_capacity,omitempty" json:"notification_queue_capacity,omitempty"`
 	// HTTP timeout duration when sending notifications to the Alertmanager.
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	NotificationTimeout *metav1.Duration `yaml:"notification_timeout,omitempty" json:"notification_timeout,omitempty"`
 	// Client configs for interacting with the Alertmanager
 	// +kubebuilder:validation:Optional
@@ -237,33 +239,15 @@ type RulerAlertManagerConfig struct {
 
 type NotifierConfig struct {
 	// +kubebuilder:validation:Optional
-	TLS TLSClientConfig `yaml:",inline,omitempty" json:",inline,omitempty"`
+	TLS *TLSClientConfig `yaml:",inline,omitempty" json:",inline,omitempty"`
 	// +kubebuilder:validation:Optional
-	BasicAuth BasicAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
+	BasicAuth *NotifBasicAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
 	// +kubebuilder:validation:Optional
-	HeaderAuth HeaderAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
+	HeaderAuth *HeaderAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
-// ClientConfig is the config for client TLS.
-type TLSClientConfig struct {
-	// +kubebuilder:validation:Optional
-	CertPath string `yaml:"tls_cert_path,omitempty" json:"tls_cert_path,omitempty" category:"advanced"`
-	// +kubebuilder:validation:Optional
-	KeyPath string `yaml:"tls_key_path,omitempty" json:"tls_key_path,omitempty" category:"advanced"`
-	// +kubebuilder:validation:Optional
-	CAPath string `yaml:"tls_ca_path,omitempty" json:"tls_ca_path,omitempty" category:"advanced"`
-	// +kubebuilder:validation:Optional
-	ServerName string `yaml:"tls_server_name,omitempty" json:"tls_server_name,omitempty" category:"advanced"`
-	// +kubebuilder:validation:Optional
-	InsecureSkipVerify bool `yaml:"tls_insecure_skip_verify,omitempty" json:"tls_insecure_skip_verify,omitempty" category:"advanced"`
-	// +kubebuilder:validation:Optional
-	CipherSuites string `yaml:"tls_cipher_suites,omitempty" json:"tls_cipher_suites,omitempty" category:"advanced" doc:"description_method=GetTLSCipherSuitesLongDescription"`
-	// +kubebuilder:validation:Optional
-	MinVersion string `yaml:"tls_min_version,omitempty" json:"tls_min_version,omitempty" category:"advanced"`
-}
-
-// BasicAuth configures basic authentication for HTTP clients.
-type BasicAuth struct {
+// NotifBasicAuth configures basic authentication for HTTP clients.
+type NotifBasicAuth struct {
 	// +kubebuilder:validation:Optional
 	Username string `yaml:"basic_auth_username,omitempty" json:"basic_auth_username,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -278,4 +262,22 @@ type HeaderAuth struct {
 	Credentials string `yaml:"credentials,omitempty" json:"credentials,omitempty"`
 	// +kubebuilder:validation:Optional
 	CredentialsFile string `yaml:"credentials_file,omitempty" json:"credentials_file,omitempty"`
+}
+
+// ClientConfig is the config for client TLS.
+type TLSClientConfig struct {
+	// +kubebuilder:validation:Optional
+	CertPath *string `yaml:"tls_cert_path,omitempty" json:"tls_cert_path,omitempty" category:"advanced"`
+	// +kubebuilder:validation:Optional
+	KeyPath *string `yaml:"tls_key_path,omitempty" json:"tls_key_path,omitempty" category:"advanced"`
+	// +kubebuilder:validation:Optional
+	CAPath *string `yaml:"tls_ca_path,omitempty" json:"tls_ca_path,omitempty" category:"advanced"`
+	// +kubebuilder:validation:Optional
+	ServerName *string `yaml:"tls_server_name,omitempty" json:"tls_server_name,omitempty" category:"advanced"`
+	// +kubebuilder:validation:Optional
+	InsecureSkipVerify *bool `yaml:"tls_insecure_skip_verify,omitempty" json:"tls_insecure_skip_verify,omitempty" category:"advanced"`
+	// +kubebuilder:validation:Optional
+	CipherSuites *string `yaml:"tls_cipher_suites,omitempty" json:"tls_cipher_suites,omitempty" category:"advanced" doc:"description_method=GetTLSCipherSuitesLongDescription"`
+	// +kubebuilder:validation:Optional
+	MinVersion *string `yaml:"tls_min_version,omitempty" json:"tls_min_version,omitempty" category:"advanced"`
 }

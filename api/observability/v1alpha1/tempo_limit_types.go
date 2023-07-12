@@ -33,6 +33,8 @@ type TempoLimits struct {
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorMaxActiveSeries *uint32 `yaml:"metrics_generator_max_active_series,omitempty" json:"metrics_generator_max_active_series,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MetricsGeneratorCollectionInterval *metav1.Duration `yaml:"metrics_generator_collection_interval,omitempty" json:"metrics_generator_collection_interval,omitempty"`
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorDisableCollection *bool `yaml:"metrics_generator_disable_collection,omitempty" json:"metrics_generator_disable_collection,omitempty"`
@@ -63,18 +65,28 @@ type TempoLimits struct {
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorProcessorLocalBlocksMaxLiveTraces *uint64 `yaml:"metrics_generator_processor_local_blocks_max_live_traces,omitempty" json:"metrics_generator_processor_local_blocks_max_live_traces,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MetricsGeneratorProcessorLocalBlocksMaxBlockDuration *metav1.Duration `yaml:"metrics_generator_processor_local_blocks_max_block_duration,omitempty" json:"metrics_generator_processor_local_blocks_max_block_duration,omitempty"`
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorProcessorLocalBlocksMaxBlockBytes *uint64 `yaml:"metrics_generator_processor_local_blocks_max_block_bytes,omitempty" json:"metrics_generator_processor_local_blocks_max_block_bytes,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MetricsGeneratorProcessorLocalBlocksFlushCheckPeriod *metav1.Duration `yaml:"metrics_generator_processor_local_blocks_flush_check_period,omitempty" json:"metrics_generator_processor_local_blocks_flush_check_period,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MetricsGeneratorProcessorLocalBlocksTraceIdlePeriod *metav1.Duration `yaml:"metrics_generator_processor_local_blocks_trace_idle_period,omitempty" json:"metrics_generator_processor_local_blocks_trace_idle_period,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MetricsGeneratorProcessorLocalBlocksCompleteBlockTimeout *metav1.Duration `yaml:"metrics_generator_processor_local_blocks_complete_block_timeout,omitempty" json:"metrics_generator_processor_local_blocks_complete_block_timeout,omitempty"`
 
 	// Compactor enforced limits.
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	BlockRetention *metav1.Duration `yaml:"block_retention,omitempty" json:"block_retention,omitempty"`
 
 	// Querier and Ingester enforced limits.
@@ -85,6 +97,8 @@ type TempoLimits struct {
 
 	// QueryFrontend enforced limits
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MaxSearchDuration *metav1.Duration `yaml:"max_search_duration,omitempty" json:"max_search_duration,omitempty"`
 
 	// MaxBytesPerTrace is enforced in the Ingester, Compactor, Querier (Search) and Serverless (Search). It
