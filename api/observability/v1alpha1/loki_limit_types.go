@@ -22,8 +22,12 @@ type LokiLimits struct {
 	// +kubebuilder:validation:Optional
 	RejectOldSamples *bool `yaml:"reject_old_samples,omitempty" json:"reject_old_samples,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	RejectOldSamplesMaxAge *metav1.Duration `yaml:"reject_old_samples_max_age,omitempty" json:"reject_old_samples_max_age,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	CreationGracePeriod *metav1.Duration `yaml:"creation_grace_period,omitempty" json:"creation_grace_period,omitempty"`
 	// +kubebuilder:validation:Optional
 	EnforceMetricName *bool `yaml:"enforce_metric_name,omitempty" json:"enforce_metric_name,omitempty"`
@@ -52,10 +56,16 @@ type LokiLimits struct {
 	// +kubebuilder:validation:Optional
 	MaxQuerySeries *int `yaml:"max_query_series,omitempty" json:"max_query_series,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MaxQueryLookback *metav1.Duration `yaml:"max_query_lookback,omitempty" json:"max_query_lookback,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MaxQueryLength *metav1.Duration `yaml:"max_query_length,omitempty" json:"max_query_length,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MaxQueryRange *metav1.Duration `yaml:"max_query_range,omitempty" json:"max_query_range,omitempty"`
 	// +kubebuilder:validation:Optional
 	MaxQueryParallelism *int `yaml:"max_query_parallelism,omitempty" json:"max_query_parallelism,omitempty"`
@@ -72,20 +82,30 @@ type LokiLimits struct {
 	// +kubebuilder:validation:Optional
 	MaxEntriesLimitPerQuery *int `yaml:"max_entries_limit_per_query,omitempty" json:"max_entries_limit_per_query,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MaxCacheFreshness *metav1.Duration `yaml:"max_cache_freshness_per_query,omitempty" json:"max_cache_freshness_per_query,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MaxStatsCacheFreshness *metav1.Duration `yaml:"max_stats_cache_freshness,omitempty" json:"max_stats_cache_freshness,omitempty"`
 	// +kubebuilder:validation:Optional
 	MaxQueriersPerTenant *int `yaml:"max_queriers_per_tenant,omitempty" json:"max_queriers_per_tenant,omitempty"`
 	// +kubebuilder:validation:Optional
 	QueryReadyIndexNumDays *int `yaml:"query_ready_index_num_days,omitempty" json:"query_ready_index_num_days,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	QueryTimeout *metav1.Duration `yaml:"query_timeout,omitempty" json:"query_timeout,omitempty"`
 
 	// Query frontend enforced limits. The default is actually parameterized by the queryrange config.
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	QuerySplitDuration *metav1.Duration `yaml:"split_queries_by_interval,omitempty" json:"split_queries_by_interval,omitempty"`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	MinShardingLookback *metav1.Duration `yaml:"min_sharding_lookback,omitempty" json:"min_sharding_lookback,omitempty"`
 	// +kubebuilder:validation:Optional
 	MaxQueryBytesRead *uint64 `yaml:"max_query_bytes_read,omitempty" json:"max_query_bytes_read,omitempty"`
@@ -100,6 +120,8 @@ type LokiLimits struct {
 
 	// TODO(dannyk): this setting is misnamed and probably deprecatable.
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	RulerEvaluationDelay *metav1.Duration `yaml:"ruler_evaluation_delay_duration,omitempty" json:"ruler_evaluation_delay_duration,omitempty"`
 	// +kubebuilder:validation:Optional
 	RulerMaxRulesPerRuleGroup *int `yaml:"ruler_max_rules_per_rule_group,omitempty" json:"ruler_max_rules_per_rule_group,omitempty"`
@@ -123,6 +145,8 @@ type LokiLimits struct {
 
 	// TODO(dannyk): possible enhancement is to align this with rule group interval
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	RulerRemoteEvaluationTimeout *metav1.Duration `yaml:"ruler_remote_evaluation_timeout,omitempty" json:"ruler_remote_evaluation_timeout,omitempty" doc:"description=Timeout for a remote rule evaluation. Defaults to the value of 'querier.query-timeout'."`
 	// +kubebuilder:validation:Optional
 	RulerRemoteEvaluationMaxResponseSize *int64 `yaml:"ruler_remote_evaluation_max_response_size,omitempty" json:"ruler_remote_evaluation_max_response_size,omitempty" doc:"description=Maximum size (in bytes) of the allowable response size from a remote rule evaluation. Set to 0 to allow any response size (default)."`
@@ -133,6 +157,8 @@ type LokiLimits struct {
 
 	// Global and per tenant retention
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	RetentionPeriod *metav1.Duration `yaml:"retention_period,omitempty" json:"retention_period,omitempty"`
 	// +kubebuilder:validation:Optional
 	// TODO: fix type StreamRetention []StreamRetention `yaml:"retention_stream,omitempty" json:"retention_stream,omitempty" doc:"description=Per-stream retention to apply, if the retention is enable on the compactor side.\nExample:\n retention_stream:\n - selector: '{namespace=\"dev\"}'\n priority: 1\n period: 24h\n- selector: '{container=\"nginx\"}'\n priority: 1\n period: 744h\nSelector is a Prometheus labels matchers that will apply the 'period' retention only if the stream is matching. In case multiple stream are matching, the highest priority will be picked. If no rule is matched the 'retention_period' is used."`
