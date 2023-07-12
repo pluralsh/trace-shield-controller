@@ -142,7 +142,8 @@ type LokiLimits struct {
 	RulerRemoteWriteDisabled *bool `yaml:"ruler_remote_write_disabled,omitempty" json:"ruler_remote_write_disabled,omitempty" doc:"description=Disable recording rules remote-write."`
 
 	// +kubebuilder:validation:Optional
-	// TODO: fix type RulerRemoteWriteConfig map[string]prom_v1.RemoteWriteSpec `yaml:"ruler_remote_write_config,omitempty" json:"ruler_remote_write_config,omitempty" doc:"description=Configures global and per-tenant limits for remote write clients. A map with remote client id as key."`
+	// TODO: we'll need to use the prometheus operator config generator to properly load and set the yaml with values from secrets, etc
+	RulerRemoteWriteConfig map[string]prom_v1.RemoteWriteSpec `yaml:"ruler_remote_write_config,omitempty" json:"ruler_remote_write_config,omitempty" doc:"description=Configures global and per-tenant limits for remote write clients. A map with remote client id as key."`
 
 	// TODO(dannyk): possible enhancement is to align this with rule group interval
 	// +kubebuilder:validation:Optional
@@ -162,13 +163,13 @@ type LokiLimits struct {
 	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	RetentionPeriod *metav1.Duration `yaml:"retention_period,omitempty" json:"retention_period,omitempty"`
 	// +kubebuilder:validation:Optional
-	// TODO: fix type StreamRetention []StreamRetention `yaml:"retention_stream,omitempty" json:"retention_stream,omitempty" doc:"description=Per-stream retention to apply, if the retention is enable on the compactor side.\nExample:\n retention_stream:\n - selector: '{namespace=\"dev\"}'\n priority: 1\n period: 24h\n- selector: '{container=\"nginx\"}'\n priority: 1\n period: 744h\nSelector is a Prometheus labels matchers that will apply the 'period' retention only if the stream is matching. In case multiple stream are matching, the highest priority will be picked. If no rule is matched the 'retention_period' is used."`
+	StreamRetention []StreamRetention `yaml:"retention_stream,omitempty" json:"retention_stream,omitempty" doc:"description=Per-stream retention to apply, if the retention is enable on the compactor side.\nExample:\n retention_stream:\n - selector: '{namespace=\"dev\"}'\n priority: 1\n period: 24h\n- selector: '{container=\"nginx\"}'\n priority: 1\n period: 744h\nSelector is a Prometheus labels matchers that will apply the 'period' retention only if the stream is matching. In case multiple stream are matching, the highest priority will be picked. If no rule is matched the 'retention_period' is used."`
 
 	// +kubebuilder:validation:Optional
-	// TODO: fix type ShardStreams *shardstreams.Config `yaml:"shard_streams,omitempty" json:"shard_streams,omitempty"`
+	ShardStreams *ShardstreamsConfig `yaml:"shard_streams,omitempty" json:"shard_streams,omitempty"`
 
 	// +kubebuilder:validation:Optional
-	// TODO: fix type BlockedQueries []*validation.BlockedQuery `yaml:"blocked_queries,omitempty" json:"blocked_queries,omitempty"`
+	BlockedQueries []*BlockedQuery `yaml:"blocked_queries,omitempty" json:"blocked_queries,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	RequiredLabels []string `yaml:"required_labels,omitempty" json:"required_labels,omitempty" doc:"description=Define a list of required selector labels."`
@@ -176,6 +177,36 @@ type LokiLimits struct {
 	RequiredNumberLabels *int `yaml:"minimum_labels_number,omitempty" json:"minimum_labels_number,omitempty" doc:"description=Minimum number of label matchers a query should contain."`
 	// +kubebuilder:validation:Optional
 	IndexGatewayShardSize *int `yaml:"index_gateway_shard_size,omitempty" json:"index_gateway_shard_size,omitempty"`
+}
+
+type StreamRetention struct {
+	Period   metav1.Duration `yaml:"period" json:"period"`
+	Priority *int            `yaml:"priority" json:"priority"`
+	Selector *string         `yaml:"selector" json:"selector"`
+}
+
+type ShardstreamsConfig struct {
+	// +kubebuilder:validation:Optional
+	Enabled *bool `yaml:"enabled,omitempty" json:"enabled,omitempty"`
+	// +kubebuilder:validation:Optional
+	LoggingEnabled *bool `yaml:"logging_enabled,omitempty" json:"logging_enabled,omitempty"`
+
+	// DesiredRate is the threshold used to shard the stream into smaller pieces.
+	// Expected to be in bytes.
+	// +kubebuilder:validation:Optional
+	DesiredRate *uint64 `yaml:"desired_rate,omitempty" json:"desired_rate,omitempty"`
+}
+
+type BlockedQuery struct {
+	// +kubebuilder:validation:Optional
+	Pattern *string `yaml:"pattern,omitempty" json:"pattern,omitempty"`
+	// +kubebuilder:validation:Optional
+	Regex *bool `yaml:"regex,omitempty" json:"regex,omitempty"`
+	// +kubebuilder:validation:Optional
+	Hash *uint32 `yaml:"hash,omitempty" json:"hash,omitempty"`
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	Types *string `yaml:"types,omitempty" json:"types,omitempty"` // TODO: add validation that the string is a comma separated list of the types metric, filter and limited
 }
 
 type RulerAlertManagerConfig struct {
