@@ -40,6 +40,155 @@ spec:
               limits:
                 description: Limits is the set of limits for the tenant
                 properties:
+                  loki:
+                    properties:
+                      cardinality_limit:
+                        type: integer
+                      creation_grace_period:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      deletion_mode:
+                        description: Global and per tenant deletion mode
+                        type: string
+                      enforce_metric_name:
+                        type: boolean
+                      increment_duplicate_timestamp:
+                        type: boolean
+                      index_gateway_shard_size:
+                        type: integer
+                      ingestion_burst_size_mb:
+                        type: number
+                      ingestion_rate_mb:
+                        type: number
+                      ingestion_rate_strategy:
+                        description: Distributor enforced limits.
+                        type: string
+                      max_cache_freshness_per_query:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      max_chunks_per_query:
+                        description: Querier enforced limits.
+                        type: integer
+                      max_concurrent_tail_requests:
+                        type: integer
+                      max_entries_limit_per_query:
+                        type: integer
+                      max_global_streams_per_user:
+                        type: integer
+                      max_label_name_length:
+                        type: integer
+                      max_label_names_per_series:
+                        type: integer
+                      max_label_value_length:
+                        type: integer
+                      max_line_size:
+                        format: int64
+                        type: integer
+                      max_line_size_truncate:
+                        type: boolean
+                      max_querier_bytes_read:
+                        format: int64
+                        type: integer
+                      max_queriers_per_tenant:
+                        type: integer
+                      max_query_bytes_read:
+                        format: int64
+                        type: integer
+                      max_query_length:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      max_query_lookback:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      max_query_parallelism:
+                        type: integer
+                      max_query_range:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      max_query_series:
+                        type: integer
+                      max_stats_cache_freshness:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      max_streams_matchers_per_query:
+                        type: integer
+                      max_streams_per_user:
+                        description: Ingester enforced limits.
+                        type: integer
+                      min_sharding_lookback:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      minimum_labels_number:
+                        type: integer
+                      per_stream_rate_limit:
+                        format: int64
+                        type: integer
+                      per_stream_rate_limit_burst:
+                        format: int64
+                        type: integer
+                      query_ready_index_num_days:
+                        type: integer
+                      query_timeout:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      reject_old_samples:
+                        type: boolean
+                      reject_old_samples_max_age:
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      required_labels:
+                        items:
+                          type: string
+                        type: array
+                      retention_period:
+                        description: Global and per tenant retention
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      ruler_evaluation_delay_duration:
+                        description: 'TODO(dannyk): this setting is misnamed and probably
+                          deprecatable.'
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      ruler_max_rule_groups_per_tenant:
+                        type: integer
+                      ruler_max_rules_per_rule_group:
+                        type: integer
+                      ruler_remote_evaluation_max_response_size:
+                        format: int64
+                        type: integer
+                      ruler_remote_evaluation_timeout:
+                        description: 'TODO(dannyk): possible enhancement is to align
+                          this with rule group interval'
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      ruler_remote_write_disabled:
+                        description: this field is the inversion of the general remote_write.enabled
+                          because the zero value of a boolean is false, and if it
+                          were ruler_remote_write_enabled, it would be impossible
+                          to know if the value was explicitly set or default
+                        type: boolean
+                      ruler_tenant_shard_size:
+                        description: 'TODO: fix type RulerAlertManagerConfig     *ruler_config.AlertManagerConfig
+                          `yaml:"ruler_alertmanager_config,omitempty" json:"ruler_alertmanager_config,omitempty"
+                          doc:"hidden"`'
+                        type: integer
+                      split_queries_by_interval:
+                        description: Query frontend enforced limits. The default is
+                          actually parameterized by the queryrange config.
+                        pattern: ^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                        type: string
+                      tsdb_max_bytes_per_shard:
+                        format: int64
+                        type: integer
+                      tsdb_max_query_parallelism:
+                        type: integer
+                      unordered_writes:
+                        type: boolean
+                      volume_enabled:
+                        type: boolean
+                      volume_max_series:
+                        type: integer
+                    type: object
                   mimir:
                     properties:
                       accept_ha_samples:
