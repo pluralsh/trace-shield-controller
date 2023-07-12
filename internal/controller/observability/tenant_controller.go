@@ -50,13 +50,22 @@ type TenantReconciler struct {
 	Scheme          *runtime.Scheme
 	Config          *observabilityv1alpha1.Config
 	mimirConfigData mimirConfigData
-	lokiConfigData  map[string]map[string]observabilityv1alpha1.LokiLimits
-	tempoConfigData map[string]map[string]observabilityv1alpha1.TempoLimits
+	lokiConfigData  lokiConfigData
+	tempoConfigData tempoConfigData
 }
 
 type mimirConfigData struct {
 	Overrides                             map[string]observabilityv1alpha1.MimirLimits `yaml:"overrides" json:"overrides"`
 	observabilityv1alpha1.MimirConfigSpec `yaml:",inline"`
+}
+
+type lokiConfigData struct {
+	Overrides                            map[string]observabilityv1alpha1.LokiLimits `yaml:"overrides" json:"overrides"`
+	observabilityv1alpha1.LokiConfigSpec `yaml:",inline"`
+}
+
+type tempoConfigData struct {
+	Overrides map[string]observabilityv1alpha1.TempoLimits `yaml:"overrides" json:"overrides"`
 }
 
 const (
@@ -240,8 +249,8 @@ func (r *TenantReconciler) updateTempoConfigmap(ctx context.Context, log logr.Lo
 
 func (r *TenantReconciler) deleteTenantResources(ctx context.Context, tenant *observabilityv1alpha1.Tenant) error {
 	delete(r.mimirConfigData.Overrides, tenant.Name)
-	delete(r.lokiConfigData["overrides"], tenant.Name)
-	delete(r.tempoConfigData["overrides"], tenant.Name)
+	delete(r.lokiConfigData.Overrides, tenant.Name)
+	delete(r.tempoConfigData.Overrides, tenant.Name)
 	return r.KetoClient.DeleteObservabilityTenantInKeto(ctx, tenant.Name)
 }
 
@@ -258,20 +267,20 @@ func (r *TenantReconciler) updateMimirConfigmapData(ctx context.Context, tenant 
 }
 
 func (r *TenantReconciler) updateLokiConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
-	if _, ok := r.lokiConfigData["overrides"]; !ok {
-		r.lokiConfigData["overrides"] = make(map[string]observabilityv1alpha1.LokiLimits)
-	}
 	if tenant.Spec.Limits != nil && tenant.Spec.Limits.Loki != nil {
-		r.lokiConfigData["overrides"][tenant.Name] = *tenant.Spec.Limits.Loki
+		r.lokiConfigData.Overrides[tenant.Name] = *tenant.Spec.Limits.Loki
+	}
+	// update the global loki config
+	if r.Config.Spec.Loki.Config != nil {
+		r.lokiConfigData.LokiConfigSpec = *r.Config.Spec.Loki.Config
+	} else {
+		r.lokiConfigData.LokiConfigSpec = observabilityv1alpha1.LokiConfigSpec{}
 	}
 }
 
 func (r *TenantReconciler) updateTempoConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
-	if _, ok := r.tempoConfigData["overrides"]; !ok {
-		r.tempoConfigData["overrides"] = make(map[string]observabilityv1alpha1.TempoLimits)
-	}
 	if tenant.Spec.Limits != nil && tenant.Spec.Limits.Tempo != nil {
-		r.tempoConfigData["overrides"][tenant.Name] = *tenant.Spec.Limits.Tempo
+		r.tempoConfigData.Overrides[tenant.Name] = *tenant.Spec.Limits.Tempo
 	}
 }
 
@@ -307,7 +316,7 @@ func (r *TenantReconciler) getMimirConfigMap(ctx context.Context) error {
 func (r *TenantReconciler) getLokiConfigMap(ctx context.Context) error {
 	existingConfigmap := &corev1.ConfigMap{}
 
-	currentTenantData := map[string]map[string]observabilityv1alpha1.LokiLimits{}
+	currentTenantData := lokiConfigData{}
 
 	err := r.Get(ctx, types.NamespacedName{Name: r.Config.Spec.Loki.ConfigMap.Name, Namespace: r.Config.Spec.Loki.ConfigMap.Namespace}, existingConfigmap)
 	if err != nil {
@@ -336,7 +345,7 @@ func (r *TenantReconciler) getLokiConfigMap(ctx context.Context) error {
 func (r *TenantReconciler) getTempoConfigMap(ctx context.Context) error {
 	existingConfigmap := &corev1.ConfigMap{}
 
-	currentTenantData := map[string]map[string]observabilityv1alpha1.TempoLimits{}
+	currentTenantData := tempoConfigData{}
 
 	err := r.Get(ctx, types.NamespacedName{Name: r.Config.Spec.Tempo.ConfigMap.Name, Namespace: r.Config.Spec.Tempo.ConfigMap.Namespace}, existingConfigmap)
 	if err != nil {
