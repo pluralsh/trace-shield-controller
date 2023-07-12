@@ -49,7 +49,14 @@ type TenantReconciler struct {
 	KetoClient      *keto.KetoGrpcClient
 	Scheme          *runtime.Scheme
 	Config          *observabilityv1alpha1.Config
-	mimirConfigData map[string]map[string]observabilityv1alpha1.MimirLimits
+	mimirConfigData mimirConfigData
+	lokiConfigData  map[string]map[string]observabilityv1alpha1.LokiLimits
+	tempoConfigData map[string]map[string]observabilityv1alpha1.TempoLimits
+}
+
+type mimirConfigData struct {
+	Overrides                             map[string]observabilityv1alpha1.MimirLimits `yaml:"overrides" json:"overrides"`
+	observabilityv1alpha1.MimirConfigSpec `yaml:",inline"`
 }
 
 const (
@@ -98,12 +105,25 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 
 	r.Config = config
 
+	// TODO: these should be optional and skipped if not configured
 	if err := r.getMimirConfigMap(ctx); err != nil {
 		log.Error(err, "unable to fetch Mimir ConfigMap")
 		return ctrl.Result{}, err
 	}
 
+	if err := r.getLokiConfigMap(ctx); err != nil {
+		log.Error(err, "unable to fetch Loki ConfigMap")
+		return ctrl.Result{}, err
+	}
+
+	if err := r.getTempoConfigMap(ctx); err != nil {
+		log.Error(err, "unable to fetch Tempo ConfigMap")
+		return ctrl.Result{}, err
+	}
+
 	defer r.updateMimirConfigmap(ctx, log)
+	defer r.updateLokiConfigmap(ctx, log)
+	defer r.updateTempoConfigmap(ctx, log)
 
 	// examine DeletionTimestamp to determine if object is under deletion
 	if tenantInstance.ObjectMeta.DeletionTimestamp.IsZero() {
@@ -146,6 +166,8 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	}
 
 	r.updateMimirConfigmapData(ctx, tenantInstance)
+	r.updateLokiConfigmapData(ctx, tenantInstance)
+	r.updateTempoConfigmapData(ctx, tenantInstance)
 
 	return ctrl.Result{}, nil
 }
@@ -172,24 +194,91 @@ func (r *TenantReconciler) updateMimirConfigmap(ctx context.Context, log logr.Lo
 	return nil
 }
 
+func (r *TenantReconciler) updateLokiConfigmap(ctx context.Context, log logr.Logger) error {
+	tenDat, _ := yaml.Marshal(r.lokiConfigData)
+
+	configmapData := map[string]string{
+		r.Config.Spec.Loki.ConfigMap.Key: string(tenDat),
+	}
+
+	lokiConfigMap := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      r.Config.Spec.Loki.ConfigMap.Name,
+			Namespace: r.Config.Spec.Loki.ConfigMap.Namespace,
+		},
+		Data: configmapData,
+	}
+
+	if err := reconcilehelper.ConfigMap(ctx, r.Client, lokiConfigMap, log); err != nil {
+		log.Error(err, "Error reconciling ConfigMap", "name", lokiConfigMap.Name)
+		return err
+	}
+	return nil
+}
+
+func (r *TenantReconciler) updateTempoConfigmap(ctx context.Context, log logr.Logger) error {
+	tenDat, _ := yaml.Marshal(r.tempoConfigData)
+
+	configmapData := map[string]string{
+		r.Config.Spec.Tempo.ConfigMap.Key: string(tenDat),
+	}
+
+	tempoConfigMap := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      r.Config.Spec.Tempo.ConfigMap.Name,
+			Namespace: r.Config.Spec.Tempo.ConfigMap.Namespace,
+		},
+		Data: configmapData,
+	}
+
+	if err := reconcilehelper.ConfigMap(ctx, r.Client, tempoConfigMap, log); err != nil {
+		log.Error(err, "Error reconciling ConfigMap", "name", tempoConfigMap.Name)
+		return err
+	}
+	return nil
+}
+
 func (r *TenantReconciler) deleteTenantResources(ctx context.Context, tenant *observabilityv1alpha1.Tenant) error {
-	delete(r.mimirConfigData["overrides"], tenant.Name)
+	delete(r.mimirConfigData.Overrides, tenant.Name)
+	delete(r.lokiConfigData["overrides"], tenant.Name)
+	delete(r.tempoConfigData["overrides"], tenant.Name)
 	return r.KetoClient.DeleteObservabilityTenantInKeto(ctx, tenant.Name)
 }
 
 func (r *TenantReconciler) updateMimirConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
-	if _, ok := r.mimirConfigData["overrides"]; !ok {
-		r.mimirConfigData["overrides"] = make(map[string]observabilityv1alpha1.MimirLimits)
-	}
 	if tenant.Spec.Limits != nil && tenant.Spec.Limits.Mimir != nil {
-		r.mimirConfigData["overrides"][tenant.Name] = *tenant.Spec.Limits.Mimir
+		r.mimirConfigData.Overrides[tenant.Name] = *tenant.Spec.Limits.Mimir
+	}
+	// update the global mimir config
+	if r.Config.Spec.Mimir.Config != nil {
+		r.mimirConfigData.MimirConfigSpec = *r.Config.Spec.Mimir.Config
+	} else {
+		r.mimirConfigData.MimirConfigSpec = observabilityv1alpha1.MimirConfigSpec{}
+	}
+}
+
+func (r *TenantReconciler) updateLokiConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
+	if _, ok := r.lokiConfigData["overrides"]; !ok {
+		r.lokiConfigData["overrides"] = make(map[string]observabilityv1alpha1.LokiLimits)
+	}
+	if tenant.Spec.Limits != nil && tenant.Spec.Limits.Loki != nil {
+		r.lokiConfigData["overrides"][tenant.Name] = *tenant.Spec.Limits.Loki
+	}
+}
+
+func (r *TenantReconciler) updateTempoConfigmapData(ctx context.Context, tenant *observabilityv1alpha1.Tenant) {
+	if _, ok := r.tempoConfigData["overrides"]; !ok {
+		r.tempoConfigData["overrides"] = make(map[string]observabilityv1alpha1.TempoLimits)
+	}
+	if tenant.Spec.Limits != nil && tenant.Spec.Limits.Tempo != nil {
+		r.tempoConfigData["overrides"][tenant.Name] = *tenant.Spec.Limits.Tempo
 	}
 }
 
 func (r *TenantReconciler) getMimirConfigMap(ctx context.Context) error {
 	existingConfigmap := &corev1.ConfigMap{}
 
-	currentTenantData := map[string]map[string]observabilityv1alpha1.MimirLimits{}
+	currentTenantData := mimirConfigData{}
 
 	err := r.Get(ctx, types.NamespacedName{Name: r.Config.Spec.Mimir.ConfigMap.Name, Namespace: r.Config.Spec.Mimir.ConfigMap.Namespace}, existingConfigmap)
 	if err != nil {
@@ -215,6 +304,64 @@ func (r *TenantReconciler) getMimirConfigMap(ctx context.Context) error {
 	return nil
 }
 
+func (r *TenantReconciler) getLokiConfigMap(ctx context.Context) error {
+	existingConfigmap := &corev1.ConfigMap{}
+
+	currentTenantData := map[string]map[string]observabilityv1alpha1.LokiLimits{}
+
+	err := r.Get(ctx, types.NamespacedName{Name: r.Config.Spec.Loki.ConfigMap.Name, Namespace: r.Config.Spec.Loki.ConfigMap.Namespace}, existingConfigmap)
+	if err != nil {
+		// TODO: handle error properly
+		// if apierrs.IsNotFound(err) {
+		// 	// log.Info("Unable to fetch Tenant - skipping", "name", tenantInstance.Name)
+		// 	return ctrl.Result{}, nil
+		// }
+		// log.Error(err, "unable to fetch Tenant")
+		// return ctrl.Result{}, ignoreNotFound(err)
+	}
+
+	if existingConfigmap.Data != nil {
+		if tenantData, ok := existingConfigmap.Data[r.Config.Spec.Loki.ConfigMap.Key]; ok {
+			yaml.Unmarshal([]byte(tenantData), &currentTenantData)
+		} else {
+			// TODO: handle error properly
+		}
+	} else {
+		// TODO: handle error properly
+	}
+	r.lokiConfigData = currentTenantData
+	return nil
+}
+
+func (r *TenantReconciler) getTempoConfigMap(ctx context.Context) error {
+	existingConfigmap := &corev1.ConfigMap{}
+
+	currentTenantData := map[string]map[string]observabilityv1alpha1.TempoLimits{}
+
+	err := r.Get(ctx, types.NamespacedName{Name: r.Config.Spec.Tempo.ConfigMap.Name, Namespace: r.Config.Spec.Tempo.ConfigMap.Namespace}, existingConfigmap)
+	if err != nil {
+		// TODO: handle error properly
+		// if apierrs.IsNotFound(err) {
+		// 	// log.Info("Unable to fetch Tenant - skipping", "name", tenantInstance.Name)
+		// 	return ctrl.Result{}, nil
+		// }
+		// log.Error(err, "unable to fetch Tenant")
+		// return ctrl.Result{}, ignoreNotFound(err)
+	}
+
+	if existingConfigmap.Data != nil {
+		if tenantData, ok := existingConfigmap.Data[r.Config.Spec.Tempo.ConfigMap.Key]; ok {
+			yaml.Unmarshal([]byte(tenantData), &currentTenantData)
+		} else {
+			// TODO: handle error properly
+		}
+	} else {
+		// TODO: handle error properly
+	}
+	r.tempoConfigData = currentTenantData
+	return nil
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *TenantReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
@@ -233,17 +380,18 @@ func (r *TenantReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		// }).
 		Watches(
 			&corev1.ConfigMap{}, // TODO: change this watch to limit to the configmaps we care about
-			handler.EnqueueRequestsFromMapFunc(r.findObjectsForConfigMap),
+			handler.EnqueueRequestsFromMapFunc(r.findObjectsToReconcile),
 			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
 		).
 		Watches(
 			&observabilityv1alpha1.Config{},
-			handler.EnqueueRequestsFromMapFunc(r.findObjectsForConfigMap),
+			handler.EnqueueRequestsFromMapFunc(r.findObjectsToReconcile),
+			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
 		).
 		Complete(r)
 }
 
-func (r *TenantReconciler) findObjectsForConfigMap(ctx context.Context, configMap client.Object) []reconcile.Request {
+func (r *TenantReconciler) findObjectsToReconcile(ctx context.Context, obj client.Object) []reconcile.Request {
 	if err := r.Get(ctx, types.NamespacedName{Name: "config"}, r.Config); err != nil {
 		if apierrs.IsNotFound(err) {
 			// log.Info("Unable to fetch Tenant - skipping", "name", tenantInstance.Name)
@@ -252,9 +400,30 @@ func (r *TenantReconciler) findObjectsForConfigMap(ctx context.Context, configMa
 		return []reconcile.Request{}
 	}
 
-	if (configMap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace) ||
-		(configMap.GetName() == r.Config.Spec.Loki.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Loki.ConfigMap.Namespace) ||
-		(configMap.GetName() == r.Config.Spec.Tempo.ConfigMap.Name && configMap.GetNamespace() == r.Config.Spec.Tempo.ConfigMap.Namespace) {
+	if configmap, ok := obj.(*corev1.ConfigMap); ok {
+		if (configmap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace) ||
+			(configmap.GetName() == r.Config.Spec.Loki.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Loki.ConfigMap.Namespace) ||
+			(configmap.GetName() == r.Config.Spec.Tempo.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Tempo.ConfigMap.Namespace) {
+			tenantList := &observabilityv1alpha1.TenantList{}
+			err := r.List(ctx, tenantList, &client.ListOptions{})
+			if err != nil {
+				return []reconcile.Request{}
+			}
+
+			requests := make([]reconcile.Request, len(tenantList.Items))
+			for i, item := range tenantList.Items {
+				requests[i] = reconcile.Request{
+					NamespacedName: types.NamespacedName{
+						Name:      item.GetName(),
+						Namespace: item.GetNamespace(),
+					},
+				}
+			}
+			return requests
+		} else {
+			return []reconcile.Request{}
+		}
+	} else if _, ok := obj.(*observabilityv1alpha1.Config); ok {
 		tenantList := &observabilityv1alpha1.TenantList{}
 		err := r.List(ctx, tenantList, &client.ListOptions{})
 		if err != nil {
@@ -271,9 +440,8 @@ func (r *TenantReconciler) findObjectsForConfigMap(ctx context.Context, configMa
 			}
 		}
 		return requests
-	} else {
-		return []reconcile.Request{}
 	}
+	return []reconcile.Request{}
 }
 
 func ignoreNotFound(err error) error {

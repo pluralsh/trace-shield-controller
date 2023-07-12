@@ -28,6 +28,7 @@ type ConfigSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
+	// TODO: these should be optional and skipped if not configured
 	// +kubebuilder:validation:Required
 	Mimir MimirSpec `json:"mimir"`
 
@@ -43,7 +44,7 @@ type MimirSpec struct {
 	ConfigMap ConfigMapSelector `json:"configMap"`
 
 	// +kubebuilder:validation:Optional
-	Config MimirConfigSpec `json:"config,omitempty"`
+	Config *MimirConfigSpec `json:"config,omitempty"`
 }
 
 type LokiSpec struct {
@@ -51,7 +52,7 @@ type LokiSpec struct {
 	ConfigMap ConfigMapSelector `json:"configMap"`
 
 	// +kubebuilder:validation:Optional
-	Config LokiConfigSpec `json:"config,omitempty"`
+	Config *LokiConfigSpec `json:"config,omitempty"`
 }
 
 type TempoSpec struct {
@@ -61,7 +62,7 @@ type TempoSpec struct {
 
 type MimirConfigSpec struct {
 	// +kubebuilder:validation:Optional
-	Multi MultiRuntimeConfig `json:"multi_kv_config,omitempty"`
+	Multi *MultiRuntimeConfig `json:"multi_kv_config,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	IngesterChunkStreaming *bool `json:"ingester_stream_chunks_when_using_blocks,omitempty"`
@@ -74,21 +75,21 @@ type MimirConfigSpec struct {
 
 type LokiConfigSpec struct {
 	// +kubebuilder:validation:Optional
-	Multi MultiRuntimeConfig `json:"multi_kv_config,omitempty"`
+	Multi *MultiRuntimeConfig `json:"multi_kv_config,omitempty"`
 	// +kubebuilder:validation:Optional
 	TenantConfig map[string]*LokiRuntimeConfig `json:"configs,omitempty"`
 }
 
 type LokiRuntimeConfig struct {
 	// +kubebuilder:validation:Optional
-	LogStreamCreation bool `json:"log_stream_creation,omitempty"`
+	LogStreamCreation *bool `json:"log_stream_creation,omitempty"`
 	// +kubebuilder:validation:Optional
-	LogPushRequest bool `json:"log_push_request,omitempty"`
+	LogPushRequest *bool `json:"log_push_request,omitempty"`
 	// +kubebuilder:validation:Optional
-	LogPushRequestStreams bool `json:"log_push_request_streams,omitempty"`
+	LogPushRequestStreams *bool `json:"log_push_request_streams,omitempty"`
 	// LimitedLogPushErrors is to be implemented and will allow logging push failures at a controlled pace.
 	// +kubebuilder:validation:Optional
-	LimitedLogPushErrors bool `json:"limited_log_push_errors,omitempty"`
+	LimitedLogPushErrors *bool `json:"limited_log_push_errors,omitempty"`
 }
 
 type MultiRuntimeConfig struct {
