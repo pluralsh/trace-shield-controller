@@ -1246,17 +1246,9 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.NotificationRateLimitPerIntegration != nil {
 		in, out := &in.NotificationRateLimitPerIntegration, &out.NotificationRateLimitPerIntegration
-		*out = make(map[string]*float64, len(*in))
+		*out = make(map[string]float64, len(*in))
 		for key, val := range *in {
-			var outVal *float64
-			if val == nil {
-				(*out)[key] = nil
-			} else {
-				in, out := &val, &outVal
-				*out = new(float64)
-				**out = **in
-			}
-			(*out)[key] = outVal
+			(*out)[key] = val
 		}
 	}
 	if in.AlertmanagerMaxConfigSizeBytes != nil {
@@ -1691,17 +1683,9 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 	}
 	if in.NotificationRateLimitPerIntegration != nil {
 		in, out := &in.NotificationRateLimitPerIntegration, &out.NotificationRateLimitPerIntegration
-		*out = make(map[string]*float64, len(*in))
+		*out = make(map[string]float64, len(*in))
 		for key, val := range *in {
-			var outVal *float64
-			if val == nil {
-				(*out)[key] = nil
-			} else {
-				in, out := &val, &outVal
-				*out = new(float64)
-				**out = **in
-			}
-			(*out)[key] = outVal
+			(*out)[key] = val
 		}
 	}
 	if in.AlertmanagerMaxConfigSizeBytes != nil {

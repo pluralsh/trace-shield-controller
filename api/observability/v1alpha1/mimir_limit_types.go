@@ -221,7 +221,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	NotificationRateLimit *float64 `yaml:"alertmanager_notification_rate_limit,omitempty" json:"alertmanager_notification_rate_limit,omitempty"`
 	// +kubebuilder:validation:Optional
-	NotificationRateLimitPerIntegration map[string]*float64 `yaml:"alertmanager_notification_rate_limit_per_integration,omitempty" json:"alertmanager_notification_rate_limit_per_integration,omitempty"`
+	NotificationRateLimitPerIntegration map[string]float64 `yaml:"alertmanager_notification_rate_limit_per_integration,omitempty" json:"alertmanager_notification_rate_limit_per_integration,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	AlertmanagerMaxConfigSizeBytes *int `yaml:"alertmanager_max_config_size_bytes,omitempty" json:"alertmanager_max_config_size_bytes,omitempty"`
