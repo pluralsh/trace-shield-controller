@@ -239,15 +239,15 @@ type RulerAlertManagerConfig struct {
 
 type NotifierConfig struct {
 	// +kubebuilder:validation:Optional
-	TLS *TLSClientConfig `yaml:",inline,omitempty" json:",inline,omitempty"`
+	TLS *NotifierTLSClientConfig `yaml:",inline,omitempty" json:",inline,omitempty"`
 	// +kubebuilder:validation:Optional
-	BasicAuth *NotifBasicAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
+	BasicAuth *NotifierBasicAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
 	// +kubebuilder:validation:Optional
-	HeaderAuth *HeaderAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
+	HeaderAuth *NotifierHeaderAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
 // NotifBasicAuth configures basic authentication for HTTP clients.
-type NotifBasicAuth struct {
+type NotifierBasicAuth struct {
 	// +kubebuilder:validation:Optional
 	Username string `yaml:"basic_auth_username,omitempty" json:"basic_auth_username,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -255,7 +255,7 @@ type NotifBasicAuth struct {
 }
 
 // HeaderAuth condigures header based authorization for HTTP clients.
-type HeaderAuth struct {
+type NotifierHeaderAuth struct {
 	// +kubebuilder:validation:Optional
 	Type string `yaml:"type,omitempty" json:"type,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -265,7 +265,7 @@ type HeaderAuth struct {
 }
 
 // ClientConfig is the config for client TLS.
-type TLSClientConfig struct {
+type NotifierTLSClientConfig struct {
 	// +kubebuilder:validation:Optional
 	CertPath *string `yaml:"tls_cert_path,omitempty" json:"tls_cert_path,omitempty" category:"advanced"`
 	// +kubebuilder:validation:Optional
