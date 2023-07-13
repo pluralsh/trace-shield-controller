@@ -114,25 +114,29 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 
 	r.Config = config
 
-	// TODO: these should be optional and skipped if not configured
-	if err := r.getMimirConfigMap(ctx); err != nil {
-		log.Error(err, "unable to fetch Mimir ConfigMap")
-		return ctrl.Result{}, err
+	if r.Config.Spec.Mimir != nil {
+		if err := r.getMimirConfigMap(ctx); err != nil {
+			log.Error(err, "unable to fetch Mimir ConfigMap")
+			return ctrl.Result{}, err
+		}
+		defer r.updateMimirConfigmap(ctx, log)
 	}
 
-	if err := r.getLokiConfigMap(ctx); err != nil {
-		log.Error(err, "unable to fetch Loki ConfigMap")
-		return ctrl.Result{}, err
+	if r.Config.Spec.Loki != nil {
+		if err := r.getLokiConfigMap(ctx); err != nil {
+			log.Error(err, "unable to fetch Loki ConfigMap")
+			return ctrl.Result{}, err
+		}
+		defer r.updateLokiConfigmap(ctx, log)
 	}
 
-	if err := r.getTempoConfigMap(ctx); err != nil {
-		log.Error(err, "unable to fetch Tempo ConfigMap")
-		return ctrl.Result{}, err
+	if r.Config.Spec.Tempo != nil {
+		if err := r.getTempoConfigMap(ctx); err != nil {
+			log.Error(err, "unable to fetch Tempo ConfigMap")
+			return ctrl.Result{}, err
+		}
+		defer r.updateTempoConfigmap(ctx, log)
 	}
-
-	defer r.updateMimirConfigmap(ctx, log)
-	defer r.updateLokiConfigmap(ctx, log)
-	defer r.updateTempoConfigmap(ctx, log)
 
 	// examine DeletionTimestamp to determine if object is under deletion
 	if tenantInstance.ObjectMeta.DeletionTimestamp.IsZero() {
@@ -174,9 +178,17 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, err
 	}
 
-	r.updateMimirConfigmapData(ctx, tenantInstance)
-	r.updateLokiConfigmapData(ctx, tenantInstance)
-	r.updateTempoConfigmapData(ctx, tenantInstance)
+	if r.Config.Spec.Mimir != nil {
+		r.updateMimirConfigmapData(ctx, tenantInstance)
+	}
+
+	if r.Config.Spec.Loki != nil {
+		r.updateLokiConfigmapData(ctx, tenantInstance)
+	}
+
+	if r.Config.Spec.Tempo != nil {
+		r.updateTempoConfigmapData(ctx, tenantInstance)
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -410,9 +422,28 @@ func (r *TenantReconciler) findObjectsToReconcile(ctx context.Context, obj clien
 	}
 
 	if configmap, ok := obj.(*corev1.ConfigMap); ok {
-		if (configmap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace) ||
-			(configmap.GetName() == r.Config.Spec.Loki.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Loki.ConfigMap.Namespace) ||
-			(configmap.GetName() == r.Config.Spec.Tempo.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Tempo.ConfigMap.Namespace) {
+
+		continueRec := false
+
+		if r.Config.Spec.Mimir != nil {
+			if configmap.GetName() == r.Config.Spec.Mimir.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Mimir.ConfigMap.Namespace {
+				continueRec = true
+			}
+		}
+
+		if r.Config.Spec.Loki != nil {
+			if configmap.GetName() == r.Config.Spec.Loki.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Loki.ConfigMap.Namespace {
+				continueRec = true
+			}
+		}
+
+		if r.Config.Spec.Tempo != nil {
+			if configmap.GetName() == r.Config.Spec.Tempo.ConfigMap.Name && configmap.GetNamespace() == r.Config.Spec.Tempo.ConfigMap.Namespace {
+				continueRec = true
+			}
+		}
+
+		if continueRec {
 			tenantList := &observabilityv1alpha1.TenantList{}
 			err := r.List(ctx, tenantList, &client.ListOptions{})
 			if err != nil {

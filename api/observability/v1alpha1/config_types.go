@@ -28,15 +28,14 @@ type ConfigSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// TODO: these should be optional and skipped if not configured
-	// +kubebuilder:validation:Required
-	Mimir MimirSpec `json:"mimir"`
+	// +kubebuilder:validation:Optional
+	Mimir *MimirSpec `json:"mimir,omitempty"`
 
-	// +kubebuilder:validation:Required
-	Loki LokiSpec `json:"loki"`
+	// +kubebuilder:validation:Optional
+	Loki *LokiSpec `json:"loki,omitempty"`
 
-	// +kubebuilder:validation:Required
-	Tempo TempoSpec `json:"tempo"`
+	// +kubebuilder:validation:Optional
+	Tempo *TempoSpec `json:"tempo,omitempty"`
 }
 
 type MimirSpec struct {

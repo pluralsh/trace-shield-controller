@@ -90,7 +90,6 @@ spec:
                 - configMap
                 type: object
               mimir:
-                description: 'TODO: these should be optional and skipped if not configured'
                 properties:
                   config:
                     properties:
@@ -175,10 +174,6 @@ spec:
                 required:
                 - configMap
                 type: object
-            required:
-            - loki
-            - mimir
-            - tempo
             type: object
           status:
             description: ConfigStatus defines the observed state of Config
