@@ -199,5 +199,32 @@ type RelabelConfig struct {
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:validation:Enum=replace;Replace;keep;Keep;drop;Drop;hashmod;HashMod;labelmap;LabelMap;labeldrop;LabelDrop;labelkeep;LabelKeep;lowercase;Lowercase;uppercase;Uppercase;keepequal;KeepEqual;dropequal;DropEqual
 	// +kubebuilder:default=replace
-	Action *string `yaml:"action,omitempty" json:"action,omitempty"`
+	Action *RelabelAction `yaml:"action,omitempty" json:"action,omitempty"`
 }
+
+type RelabelAction string
+
+const (
+	RelabelActionReplace    RelabelAction = "replace"
+	RelabelActionReplace0   RelabelAction = "Replace"
+	RelabelActionKeep       RelabelAction = "keep"
+	RelabelActionKeep0      RelabelAction = "Keep"
+	RelabelActionDrop       RelabelAction = "drop"
+	RelabelActionDrop0      RelabelAction = "Drop"
+	RelabelActionHashmod    RelabelAction = "hashmod"
+	RelabelActionHashMod    RelabelAction = "HashMod"
+	RelabelActionLabelmap   RelabelAction = "labelmap"
+	RelabelActionLabelMap   RelabelAction = "LabelMap"
+	RelabelActionLabeldrop  RelabelAction = "labeldrop"
+	RelabelActionLabelDrop  RelabelAction = "LabelDrop"
+	RelabelActionLabelkeep  RelabelAction = "labelkeep"
+	RelabelActionLabelKeep  RelabelAction = "LabelKeep"
+	RelabelActionLowercase  RelabelAction = "lowercase"
+	RelabelActionLowercase0 RelabelAction = "Lowercase"
+	RelabelActionUppercase  RelabelAction = "uppercase"
+	RelabelActionUppercase0 RelabelAction = "Uppercase"
+	RelabelActionKeepequal  RelabelAction = "keepequal"
+	RelabelActionKeepEqual  RelabelAction = "KeepEqual"
+	RelabelActionDropequal  RelabelAction = "dropequal"
+	RelabelActionDropEqual  RelabelAction = "DropEqual"
+)
