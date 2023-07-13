@@ -177,6 +177,8 @@ type LokiLimits struct {
 	IndexGatewayShardSize *int `yaml:"index_gateway_shard_size,omitempty" json:"index_gateway_shard_size,omitempty"`
 }
 
+type LokiLimitsInput LokiLimits
+
 type StreamRetention struct {
 	Period   metav1.Duration `yaml:"period" json:"period"`
 	Priority *int            `yaml:"priority" json:"priority"`

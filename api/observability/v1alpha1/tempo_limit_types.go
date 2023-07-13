@@ -107,6 +107,8 @@ type TempoLimits struct {
 	MaxBytesPerTrace *int `yaml:"max_bytes_per_trace,omitempty" json:"max_bytes_per_trace,omitempty"`
 }
 
+type TempoLimitsInput TempoLimits
+
 type FilterPolicy struct {
 	// +kubebuilder:validation:Optional
 	Include *PolicyMatch `yaml:"include,omitempty" json:"include,omitempty"`

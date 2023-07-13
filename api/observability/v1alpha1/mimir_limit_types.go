@@ -239,11 +239,6 @@ type MimirLimits struct {
 
 type MimirLimitsInput MimirLimits
 
-type ForwardingRule struct {
-	// Ingest defines whether a metric should still be pushed to the Ingesters despite it being forwarded.
-	Ingest *bool `yaml:"ingest,omitempty" json:"ingest,omitempty"`
-}
-
 const (
 	// TenantReadyCondition reports on current status of the Tenant. Ready indicates the tenant has been created and the limits have been applied.
 	TenantReadyCondition crhelperTypes.ConditionType = "TenantReady"
