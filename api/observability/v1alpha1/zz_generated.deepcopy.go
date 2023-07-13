@@ -1943,21 +1943,17 @@ func (in *ProxyConfig) DeepCopyInto(out *ProxyConfig) {
 	}
 	if in.ProxyConnectHeader != nil {
 		in, out := &in.ProxyConnectHeader, &out.ProxyConnectHeader
-		*out = new(map[string][]config.Secret)
-		if **in != nil {
-			in, out := *in, *out
-			*out = make(map[string][]config.Secret, len(*in))
-			for key, val := range *in {
-				var outVal []config.Secret
-				if val == nil {
-					(*out)[key] = nil
-				} else {
-					in, out := &val, &outVal
-					*out = make([]config.Secret, len(*in))
-					copy(*out, *in)
-				}
-				(*out)[key] = outVal
+		*out = make(config.Header, len(*in))
+		for key, val := range *in {
+			var outVal []config.Secret
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				in, out := &val, &outVal
+				*out = make([]config.Secret, len(*in))
+				copy(*out, *in)
 			}
+			(*out)[key] = outVal
 		}
 	}
 }
