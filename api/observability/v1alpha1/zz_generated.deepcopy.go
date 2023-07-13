@@ -2064,7 +2064,7 @@ func (in *RelabelConfig) DeepCopyInto(out *RelabelConfig) {
 	}
 	if in.Action != nil {
 		in, out := &in.Action, &out.Action
-		*out = new(RelabelAction)
+		*out = new(string)
 		**out = **in
 	}
 }
