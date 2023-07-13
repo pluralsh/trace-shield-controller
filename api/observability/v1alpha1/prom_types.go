@@ -171,7 +171,7 @@ type ProxyConfig struct {
 	// these headers are going to contain secrets and use Secret as the
 	// value type instead of string.
 	// +kubebuilder:validation:Optional
-	ProxyConnectHeader *prom_config.Header `yaml:"proxy_connect_header,omitempty" json:"proxy_connect_header,omitempty"`
+	ProxyConnectHeader prom_config.Header `yaml:"proxy_connect_header,omitempty" json:"proxy_connect_header,omitempty"`
 }
 
 type RelabelConfig struct {
