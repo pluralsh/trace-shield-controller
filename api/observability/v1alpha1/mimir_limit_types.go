@@ -33,21 +33,18 @@ type MimirLimits struct {
 	MaxLabelNamesPerSeries *int `yaml:"max_label_names_per_series,omitempty" json:"max_label_names_per_series,omitempty"`
 	// +kubebuilder:validation:Optional
 	MaxMetadataLength *int `yaml:"max_metadata_length,omitempty" json:"max_metadata_length,omitempty"`
-
+	// +kubebuilder:validation:Optional
+	MaxNativeHistogramBuckets *int `yaml:"max_native_histogram_buckets,omitempty" json:"max_native_histogram_buckets,omitempty"`
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:validation:Type=string
 	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	CreationGracePeriod *metav1.Duration `yaml:"creation_grace_period,omitempty" json:"creation_grace_period,omitempty" category:"advanced"`
-
 	// +kubebuilder:validation:Optional
 	EnforceMetadataMetricName *bool `yaml:"enforce_metadata_metric_name,omitempty" json:"enforce_metadata_metric_name,omitempty" category:"advanced"`
 	// +kubebuilder:validation:Optional
 	IngestionTenantShardSize *int `yaml:"ingestion_tenant_shard_size,omitempty" json:"ingestion_tenant_shard_size,omitempty"`
 	// +kubebuilder:validation:Optional
-
-	// TODO: decide if we should support this (experimental) List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs.
-	// +kubebuilder:validation:Optional
-	//MetricRelabelConfigs []*Config `yaml:"metric_relabel_configs,omitempty" json:"metric_relabel_configs,omitempty" doc:"nocli|description=List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs." category:"experimental"`
+	MetricRelabelConfigs []RelabelConfig `yaml:"metric_relabel_configs,omitempty" json:"metric_relabel_configs,omitempty" doc:"nocli|description=List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs." category:"experimental"`
 
 	// Ingester enforced limits.
 	// Series
@@ -69,7 +66,7 @@ type MimirLimits struct {
 	NativeHistogramsIngestionEnabled *bool `yaml:"native_histograms_ingestion_enabled,omitempty" json:"native_histograms_ingestion_enabled,omitempty" category:"experimental"`
 	// Active series custom trackers
 	// +kubebuilder:validation:Optional
-	// TODO: re-enable once fixed ActiveSeriesCustomTrackersConfig CustomTrackersConfig `yaml:"active_series_custom_trackers,omitempty" json:"active_series_custom_trackers,omitempty" doc:"description=Additional custom trackers for active metrics. If there are active series matching a provided matcher (map value), the count will be exposed in the custom trackers metric labeled using the tracker name (map key). Zero valued counts are not exposed (and removed when they go back to zero)." category:"advanced"`
+	ActiveSeriesCustomTrackersConfig map[string]string `yaml:"active_series_custom_trackers,omitempty" json:"active_series_custom_trackers,omitempty" doc:"description=Additional custom trackers for active metrics. If there are active series matching a provided matcher (map value), the count will be exposed in the custom trackers metric labeled using the tracker name (map key). Zero valued counts are not exposed (and removed when they go back to zero)." category:"advanced"`
 	// Max allowed time window for out-of-order samples.
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:validation:Type=string
@@ -120,6 +117,10 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Type=string
 	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	SplitInstantQueriesByInterval *metav1.Duration `yaml:"split_instant_queries_by_interval,omitempty" json:"split_instant_queries_by_interval,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	QueryIngestersWithin *metav1.Duration `yaml:"query_ingesters_within,omitempty" json:"query_ingesters_within,omitempty" category:"advanced"`
 
 	// Query-frontend limits.
 	// +kubebuilder:validation:Optional
@@ -134,6 +135,16 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Type=string
 	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
 	ResultsCacheTTLForOutOfOrderTimeWindow *metav1.Duration `yaml:"results_cache_ttl_for_out_of_order_time_window,omitempty" json:"results_cache_ttl_for_out_of_order_time_window,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	ResultsCacheTTLForCardinalityQuery *metav1.Duration `yaml:"results_cache_ttl_for_cardinality_query,omitempty" json:"results_cache_ttl_for_cardinality_query,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
+	ResultsCacheTTLForLabelsQuery *metav1.Duration `yaml:"results_cache_ttl_for_labels_query,omitempty" json:"results_cache_ttl_for_labels_query,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Optional
+	ResultsCacheForUnalignedQueryEnabled *bool `yaml:"cache_unaligned_requests,omitempty" json:"cache_unaligned_requests,omitempty" category:"advanced"`
 	// +kubebuilder:validation:Optional
 	MaxQueryExpressionSizeBytes *int `yaml:"max_query_expression_size_bytes,omitempty" json:"max_query_expression_size_bytes,omitempty" category:"experimental"`
 
@@ -160,6 +171,8 @@ type MimirLimits struct {
 	RulerRecordingRulesEvaluationEnabled *bool `yaml:"ruler_recording_rules_evaluation_enabled,omitempty" json:"ruler_recording_rules_evaluation_enabled,omitempty" category:"experimental"`
 	// +kubebuilder:validation:Optional
 	RulerAlertingRulesEvaluationEnabled *bool `yaml:"ruler_alerting_rules_evaluation_enabled,omitempty" json:"ruler_alerting_rules_evaluation_enabled,omitempty" category:"experimental"`
+	// +kubebuilder:validation:Optional
+	RulerSyncRulesOnChangesEnabled *bool `yaml:"ruler_sync_rules_on_changes_enabled,omitempty" json:"ruler_sync_rules_on_changes_enabled,omitempty" category:"advanced"`
 
 	// Store-gateway.
 	// +kubebuilder:validation:Optional
@@ -186,6 +199,8 @@ type MimirLimits struct {
 	CompactorBlockUploadValidationEnabled *bool `yaml:"compactor_block_upload_validation_enabled,omitempty" json:"compactor_block_upload_validation_enabled,omitempty"`
 	// +kubebuilder:validation:Optional
 	CompactorBlockUploadVerifyChunks *bool `yaml:"compactor_block_upload_verify_chunks,omitempty" json:"compactor_block_upload_verify_chunks,omitempty"`
+	// +kubebuilder:validation:Optional
+	CompactorBlockUploadMaxBlockSizeBytes *int64 `yaml:"compactor_block_upload_max_block_size_bytes,omitempty" json:"compactor_block_upload_max_block_size_bytes,omitempty" category:"advanced"`
 
 	// This config doesn't have a CLI flag registered here because they're registered in
 	// their own original config struct.
@@ -220,16 +235,6 @@ type MimirLimits struct {
 	AlertmanagerMaxAlertsCount *int `yaml:"alertmanager_max_alerts_count,omitempty" json:"alertmanager_max_alerts_count,omitempty"`
 	// +kubebuilder:validation:Optional
 	AlertmanagerMaxAlertsSizeBytes *int `yaml:"alertmanager_max_alerts_size_bytes,omitempty" json:"alertmanager_max_alerts_size_bytes,omitempty"`
-
-	// +kubebuilder:validation:Optional
-	ForwardingEndpoint *string `yaml:"forwarding_endpoint,omitempty" json:"forwarding_endpoint,omitempty" doc:"nocli|description=Remote-write endpo*int where metrics specified in forwarding_rules are forwarded to. If set, takes precedence over endpoints specified in forwarding rules."`
-	// +kubebuilder:validation:Optional
-	// +kubebuilder:validation:Type=string
-	// +kubebuilder:validation:Pattern="^([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$"
-	ForwardingDropOlderThan *metav1.Duration `yaml:"forwarding_drop_older_than,omitempty" json:"forwarding_drop_older_than,omitempty" doc:"nocli|description=If set, forwarding drops samples that are older than this duration. If unset or 0, no samples get dropped."`
-	// +kubebuilder:validation:Optional
-	// ForwardingRules are keyed by metric names, excluding labels.
-	ForwardingRules map[string]*ForwardingRule `yaml:"forwarding_rules,omitempty" json:"forwarding_rules,omitempty" doc:"nocli|description=Rules based on which the Distributor decides whether a metric should be forwarded to an alternative remote_write API endpoint."`
 }
 
 type MimirLimitsInput MimirLimits
