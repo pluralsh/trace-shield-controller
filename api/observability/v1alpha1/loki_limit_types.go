@@ -287,8 +287,6 @@ func (t *BlockedQueryTypes) UnmarshalYAML(unmarshal func(interface{}) error) err
 	return nil
 }
 
-type BlockedQueryInput BlockedQuery
-
 type RulerAlertManagerConfig struct {
 	// URL of the Alertmanager to send notifications to.
 	AlertmanagerURL string `yaml:"alertmanager_url,omitempty" json:"alertmanager_url,omitempty"`

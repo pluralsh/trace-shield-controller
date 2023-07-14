@@ -181,6 +181,21 @@ type ProxyConfig struct {
 // +kubebuilder:validation:Pattern:="^[a-zA-Z_][a-zA-Z0-9_]*$"
 type LabelName string
 
+// UnmarshalGQL implements the graphql.Unmarshaler interface
+func (l *LabelName) UnmarshalGQL(v interface{}) error {
+	label, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("LabelName must be a string")
+	}
+	*l = LabelName(label)
+	return nil
+}
+
+// MarshalGQL implements the graphql.Marshaler interface
+func (l LabelName) MarshalGQL(w io.Writer) {
+	w.Write([]byte(l))
+}
+
 type RelabelConfig struct {
 	// A list of labels from which values are taken and concatenated
 	// with the configured separator in order.
