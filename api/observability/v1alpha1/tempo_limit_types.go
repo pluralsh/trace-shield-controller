@@ -238,7 +238,7 @@ type DimensionMappings struct {
 	// +kubebuilder:validation:Optional
 	Name *string `yaml:"name,omitempty" json:"name,omitempty"`
 	// +kubebuilder:validation:Optional
-	SourceLabel []*string `yaml:"source_labels,omitempty" json:"source_labels,omitempty"`
+	SourceLabel []string `yaml:"source_labels,omitempty" json:"source_labels,omitempty"`
 	// +kubebuilder:validation:Optional
 	Join *string `yaml:"join,omitempty" json:"join,omitempty"`
 }

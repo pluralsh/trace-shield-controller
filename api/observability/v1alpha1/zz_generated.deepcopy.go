@@ -211,14 +211,8 @@ func (in *DimensionMappings) DeepCopyInto(out *DimensionMappings) {
 	}
 	if in.SourceLabel != nil {
 		in, out := &in.SourceLabel, &out.SourceLabel
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.Join != nil {
 		in, out := &in.Join, &out.Join
