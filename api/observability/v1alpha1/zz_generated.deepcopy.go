@@ -652,13 +652,9 @@ func (in *LokiLimits) DeepCopyInto(out *LokiLimits) {
 	}
 	if in.BlockedQueries != nil {
 		in, out := &in.BlockedQueries, &out.BlockedQueries
-		*out = make([]*BlockedQuery, len(*in))
+		*out = make([]BlockedQuery, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(BlockedQuery)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.RequiredLabels != nil {
@@ -967,13 +963,9 @@ func (in *LokiLimitsInput) DeepCopyInto(out *LokiLimitsInput) {
 	}
 	if in.BlockedQueries != nil {
 		in, out := &in.BlockedQueries, &out.BlockedQueries
-		*out = make([]*BlockedQuery, len(*in))
+		*out = make([]BlockedQuery, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(BlockedQuery)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.RequiredLabels != nil {
@@ -1274,13 +1266,9 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.MetricRelabelConfigs != nil {
 		in, out := &in.MetricRelabelConfigs, &out.MetricRelabelConfigs
-		*out = make([]*RelabelConfig, len(*in))
+		*out = make([]RelabelConfig, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(RelabelConfig)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.MaxGlobalSeriesPerUser != nil {
@@ -1715,13 +1703,9 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 	}
 	if in.MetricRelabelConfigs != nil {
 		in, out := &in.MetricRelabelConfigs, &out.MetricRelabelConfigs
-		*out = make([]*RelabelConfig, len(*in))
+		*out = make([]RelabelConfig, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(RelabelConfig)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.MaxGlobalSeriesPerUser != nil {
@@ -2570,13 +2554,9 @@ func (in *RulerAlertManagerConfig) DeepCopyInto(out *RulerAlertManagerConfig) {
 	}
 	if in.AlertRelabelConfigs != nil {
 		in, out := &in.AlertRelabelConfigs, &out.AlertRelabelConfigs
-		*out = make([]*RelabelConfig, len(*in))
+		*out = make([]RelabelConfig, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(RelabelConfig)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.NotificationQueueCapacity != nil {

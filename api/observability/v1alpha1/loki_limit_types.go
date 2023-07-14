@@ -172,7 +172,7 @@ type LokiLimits struct {
 	ShardStreams *ShardstreamsConfig `yaml:"shard_streams,omitempty" json:"shard_streams,omitempty"`
 
 	// +kubebuilder:validation:Optional
-	BlockedQueries []*BlockedQuery `yaml:"blocked_queries,omitempty" json:"blocked_queries,omitempty"`
+	BlockedQueries []BlockedQuery `yaml:"blocked_queries,omitempty" json:"blocked_queries,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	RequiredLabels []string `yaml:"required_labels,omitempty" json:"required_labels,omitempty" doc:"description=Define a list of required selector labels."`
@@ -298,8 +298,8 @@ type RulerAlertManagerConfig struct {
 	// +kubebuilder:validation:Optional
 	AlertmanangerEnableV2API *bool `yaml:"enable_alertmanager_v2,omitempty" json:"enable_alertmanager_v2,omitempty"`
 	// Configuration for alert relabeling.
-	// +kubebuilder:validation:Optional // TODO: remove all references to this to our own type since the yaml tags will be different
-	AlertRelabelConfigs []*RelabelConfig `yaml:"alert_relabel_configs,omitempty" json:"alert_relabel_configs,omitempty" doc:"description=List of alert relabel configs."`
+	// +kubebuilder:validation:Optional
+	AlertRelabelConfigs []RelabelConfig `yaml:"alert_relabel_configs,omitempty" json:"alert_relabel_configs,omitempty" doc:"description=List of alert relabel configs."`
 	// Capacity of the queue for notifications to be sent to the Alertmanager.
 	// +kubebuilder:validation:Optional
 	NotificationQueueCapacity *int `yaml:"notification_queue_capacity,omitempty" json:"notification_queue_capacity,omitempty"`
