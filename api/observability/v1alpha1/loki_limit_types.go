@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -281,6 +282,22 @@ func (t *BlockedQueryTypes) UnmarshalYAML(unmarshal func(interface{}) error) err
 		*t = append(*t, BlockedQueryType(v))
 	}
 	return nil
+}
+
+func (t *BlockedQueryTypes) UnmarshalGQL(v interface{}) error {
+	m, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("%T is not a map", v)
+	}
+
+	for _, v := range strings.Split(m, ",") {
+		*t = append(*t, BlockedQueryType(v))
+	}
+	return nil
+}
+
+func (t BlockedQueryTypes) MarshalGQL(w io.Writer) {
+	json.NewEncoder(w).Encode(t.String())
 }
 
 type RulerAlertManagerConfig struct {
