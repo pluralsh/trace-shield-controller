@@ -200,7 +200,7 @@ type RelabelConfig struct {
 	// A list of labels from which values are taken and concatenated
 	// with the configured separator in order.
 	// +kubebuilder:validation:Optional
-	SourceLabels []*LabelName `yaml:"source_labels,omitempty" json:"source_labels,omitempty"`
+	SourceLabels []LabelName `yaml:"source_labels,omitempty" json:"source_labels,omitempty"`
 	// Separator is the string between concatenated values from the source labels.
 	// +kubebuilder:validation:Optional
 	Separator *string `yaml:"separator,omitempty" json:"separator,omitempty"`

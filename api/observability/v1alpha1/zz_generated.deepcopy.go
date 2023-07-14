@@ -2410,14 +2410,8 @@ func (in *RelabelConfig) DeepCopyInto(out *RelabelConfig) {
 	*out = *in
 	if in.SourceLabels != nil {
 		in, out := &in.SourceLabels, &out.SourceLabels
-		*out = make([]*LabelName, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(LabelName)
-				**out = **in
-			}
-		}
+		*out = make([]LabelName, len(*in))
+		copy(*out, *in)
 	}
 	if in.Separator != nil {
 		in, out := &in.Separator, &out.Separator
