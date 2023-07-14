@@ -171,14 +171,12 @@ type PolicyMatch struct {
 }
 
 type MatchPolicyAttribute struct {
-	// +kubebuilder:validation:Optional
-	Key *string `yaml:"key,omitempty" json:"key,omitempty"`
+	Key string `yaml:"key" json:"key"`
 
-	// +kubebuilder:validation:Optional
 	// +kubebuilder:pruning:PreserveUnknownFields
 	// +kubebuilder:validation:Schemaless
 	// +kubebuilder:validation:Type=object
-	Value *WrappedMap `yaml:"value,omitempty" json:"value,omitempty"`
+	Value WrappedMap `yaml:"value" json:"value"`
 }
 
 type WrappedMap struct {

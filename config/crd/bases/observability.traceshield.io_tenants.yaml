@@ -1091,6 +1091,9 @@ spec:
                                       value:
                                         type: object
                                         x-kubernetes-preserve-unknown-fields: true
+                                    required:
+                                    - key
+                                    - value
                                     type: object
                                   type: array
                                 match_type:
@@ -1109,6 +1112,9 @@ spec:
                                       value:
                                         type: object
                                         x-kubernetes-preserve-unknown-fields: true
+                                    required:
+                                    - key
+                                    - value
                                     type: object
                                   type: array
                                 match_type:
