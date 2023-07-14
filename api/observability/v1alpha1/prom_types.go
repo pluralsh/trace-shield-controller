@@ -19,7 +19,7 @@ type RemoteWriteSpec struct {
 	// +kubebuilder:validation:Optional
 	Headers map[string]string `yaml:"headers,omitempty" json:"headers,omitempty"`
 	// +kubebuilder:validation:Optional
-	WriteRelabelConfigs []*RelabelConfig `yaml:"write_relabel_configs,omitempty" json:"write_relabel_configs,omitempty"`
+	WriteRelabelConfigs []RelabelConfig `yaml:"write_relabel_configs,omitempty" json:"write_relabel_configs,omitempty"`
 	// +kubebuilder:validation:Optional
 	Name *string `yaml:"name,omitempty" json:"name,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -147,7 +147,7 @@ type OAuth2 struct {
 	// +kubebuilder:validation:Optional
 	ClientSecretFile *string `yaml:"client_secret_file" json:"client_secret_file"`
 	// +kubebuilder:validation:Optional
-	Scopes []*string `yaml:"scopes,omitempty" json:"scopes,omitempty"`
+	Scopes []string `yaml:"scopes,omitempty" json:"scopes,omitempty"`
 	// +kubebuilder:validation:Optional
 	TokenURL *string `yaml:"token_url" json:"token_url"`
 	// +kubebuilder:validation:Optional

@@ -27,14 +27,14 @@ type TempoLimits struct {
 
 	// Forwarders
 	// +kubebuilder:validation:Optional
-	Forwarders []*string `yaml:"forwarders,omitempty" json:"forwarders,omitempty"`
+	Forwarders []string `yaml:"forwarders,omitempty" json:"forwarders,omitempty"`
 
 	// Metrics-generator config
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorRingSize *int `yaml:"metrics_generator_ring_size,omitempty" json:"metrics_generator_ring_size,omitempty"`
 	// TODO: ensure the list only contains service-graphs and span-metrics
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessors []*string `yaml:"metrics_generator_processors,omitempty" json:"metrics_generator_processors,omitempty"`
+	MetricsGeneratorProcessors []string `yaml:"metrics_generator_processors,omitempty" json:"metrics_generator_processors,omitempty"`
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorMaxActiveSeries *uint32 `yaml:"metrics_generator_max_active_series,omitempty" json:"metrics_generator_max_active_series,omitempty"`
 	// +kubebuilder:validation:Optional
@@ -48,23 +48,23 @@ type TempoLimits struct {
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorForwarderWorkers *int `yaml:"metrics_generator_forwarder_workers,omitempty" json:"metrics_generator_forwarder_workers,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessorServiceGraphsHistogramBuckets []*float64 `yaml:"metrics_generator_processor_service_graphs_histogram_buckets,omitempty" json:"metrics_generator_processor_service_graphs_histogram_buckets,omitempty"`
+	MetricsGeneratorProcessorServiceGraphsHistogramBuckets []float64 `yaml:"metrics_generator_processor_service_graphs_histogram_buckets,omitempty" json:"metrics_generator_processor_service_graphs_histogram_buckets,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessorServiceGraphsDimensions []*string `yaml:"metrics_generator_processor_service_graphs_dimensions,omitempty" json:"metrics_generator_processor_service_graphs_dimensions,omitempty"`
+	MetricsGeneratorProcessorServiceGraphsDimensions []string `yaml:"metrics_generator_processor_service_graphs_dimensions,omitempty" json:"metrics_generator_processor_service_graphs_dimensions,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessorServiceGraphsPeerAttributes []*string `yaml:"metrics_generator_processor_service_graphs_peer_attributes,omitempty" json:"metrics_generator_processor_service_graphs_peer_attributes,omitempty"`
+	MetricsGeneratorProcessorServiceGraphsPeerAttributes []string `yaml:"metrics_generator_processor_service_graphs_peer_attributes,omitempty" json:"metrics_generator_processor_service_graphs_peer_attributes,omitempty"`
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorProcessorServiceGraphsEnableClientServerPrefix *bool `yaml:"metrics_generator_processor_service_graphs_enable_client_server_prefix,omitempty" json:"metrics_generator_processor_service_graphs_enable_client_server_prefix,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessorSpanMetricsHistogramBuckets []*float64 `yaml:"metrics_generator_processor_span_metrics_histogram_buckets,omitempty" json:"metrics_generator_processor_span_metrics_histogram_buckets,omitempty"`
+	MetricsGeneratorProcessorSpanMetricsHistogramBuckets []float64 `yaml:"metrics_generator_processor_span_metrics_histogram_buckets,omitempty" json:"metrics_generator_processor_span_metrics_histogram_buckets,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessorSpanMetricsDimensions []*string `yaml:"metrics_generator_processor_span_metrics_dimensions,omitempty" json:"metrics_generator_processor_span_metrics_dimensions,omitempty"`
+	MetricsGeneratorProcessorSpanMetricsDimensions []string `yaml:"metrics_generator_processor_span_metrics_dimensions,omitempty" json:"metrics_generator_processor_span_metrics_dimensions,omitempty"`
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorProcessorSpanMetricsIntrinsicDimensions map[string]bool `yaml:"metrics_generator_processor_span_metrics_intrinsic_dimensions,omitempty" json:"metrics_generator_processor_span_metrics_intrinsic_dimensions,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessorSpanMetricsFilterPolicies []*FilterPolicy `yaml:"metrics_generator_processor_span_metrics_filter_policies,omitempty" json:"metrics_generator_processor_span_metrics_filter_policies,omitempty"`
+	MetricsGeneratorProcessorSpanMetricsFilterPolicies []FilterPolicy `yaml:"metrics_generator_processor_span_metrics_filter_policies,omitempty" json:"metrics_generator_processor_span_metrics_filter_policies,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricsGeneratorProcessorSpanMetricsDimensionMappings []*DimensionMappings `yaml:"metrics_generator_processor_span_metrics_dimension_mappings,omitempty" json:"metrics_generator_processor_span_metrics_dimension_mapings,omitempty"`
+	MetricsGeneratorProcessorSpanMetricsDimensionMappings []DimensionMappings `yaml:"metrics_generator_processor_span_metrics_dimension_mappings,omitempty" json:"metrics_generator_processor_span_metrics_dimension_mapings,omitempty"`
 	// +kubebuilder:validation:Optional
 	MetricsGeneratorProcessorSpanMetricsEnableTargetInfo *bool `yaml:"metrics_generator_processor_span_metrics_enable_target_info,omitempty" json:"metrics_generator_processor_span_metrics_enable_target_info,omitempty"`
 	// +kubebuilder:validation:Optional

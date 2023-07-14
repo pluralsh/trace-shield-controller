@@ -24,7 +24,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	HAMaxClusters *int `yaml:"ha_max_clusters,omitempty" json:"ha_max_clusters,omitempty"`
 	// +kubebuilder:validation:Optional
-	DropLabels []*string `yaml:"drop_labels,omitempty" json:"drop_labels,omitempty" category:"advanced"`
+	DropLabels []string `yaml:"drop_labels,omitempty" json:"drop_labels,omitempty" category:"advanced"`
 	// +kubebuilder:validation:Optional
 	MaxLabelNameLength *int `yaml:"max_label_name_length,omitempty" json:"max_label_name_length,omitempty"`
 	// +kubebuilder:validation:Optional

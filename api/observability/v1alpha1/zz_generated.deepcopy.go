@@ -1209,14 +1209,8 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.DropLabels != nil {
 		in, out := &in.DropLabels, &out.DropLabels
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MaxLabelNameLength != nil {
 		in, out := &in.MaxLabelNameLength, &out.MaxLabelNameLength
@@ -1646,14 +1640,8 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 	}
 	if in.DropLabels != nil {
 		in, out := &in.DropLabels, &out.DropLabels
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MaxLabelNameLength != nil {
 		in, out := &in.MaxLabelNameLength, &out.MaxLabelNameLength
@@ -2229,14 +2217,8 @@ func (in *OAuth2) DeepCopyInto(out *OAuth2) {
 	}
 	if in.Scopes != nil {
 		in, out := &in.Scopes, &out.Scopes
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.TokenURL != nil {
 		in, out := &in.TokenURL, &out.TokenURL
@@ -2466,13 +2448,9 @@ func (in *RemoteWriteSpec) DeepCopyInto(out *RemoteWriteSpec) {
 	}
 	if in.WriteRelabelConfigs != nil {
 		in, out := &in.WriteRelabelConfigs, &out.WriteRelabelConfigs
-		*out = make([]*RelabelConfig, len(*in))
+		*out = make([]RelabelConfig, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(RelabelConfig)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.Name != nil {
@@ -2704,14 +2682,8 @@ func (in *TempoLimits) DeepCopyInto(out *TempoLimits) {
 	}
 	if in.Forwarders != nil {
 		in, out := &in.Forwarders, &out.Forwarders
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorRingSize != nil {
 		in, out := &in.MetricsGeneratorRingSize, &out.MetricsGeneratorRingSize
@@ -2720,14 +2692,8 @@ func (in *TempoLimits) DeepCopyInto(out *TempoLimits) {
 	}
 	if in.MetricsGeneratorProcessors != nil {
 		in, out := &in.MetricsGeneratorProcessors, &out.MetricsGeneratorProcessors
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorMaxActiveSeries != nil {
 		in, out := &in.MetricsGeneratorMaxActiveSeries, &out.MetricsGeneratorMaxActiveSeries
@@ -2756,36 +2722,18 @@ func (in *TempoLimits) DeepCopyInto(out *TempoLimits) {
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsHistogramBuckets != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsHistogramBuckets, &out.MetricsGeneratorProcessorServiceGraphsHistogramBuckets
-		*out = make([]*float64, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(float64)
-				**out = **in
-			}
-		}
+		*out = make([]float64, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsDimensions != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsDimensions, &out.MetricsGeneratorProcessorServiceGraphsDimensions
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsPeerAttributes != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsPeerAttributes, &out.MetricsGeneratorProcessorServiceGraphsPeerAttributes
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsEnableClientServerPrefix != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsEnableClientServerPrefix, &out.MetricsGeneratorProcessorServiceGraphsEnableClientServerPrefix
@@ -2794,25 +2742,13 @@ func (in *TempoLimits) DeepCopyInto(out *TempoLimits) {
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsHistogramBuckets != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsHistogramBuckets, &out.MetricsGeneratorProcessorSpanMetricsHistogramBuckets
-		*out = make([]*float64, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(float64)
-				**out = **in
-			}
-		}
+		*out = make([]float64, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsDimensions != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsDimensions, &out.MetricsGeneratorProcessorSpanMetricsDimensions
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsIntrinsicDimensions != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsIntrinsicDimensions, &out.MetricsGeneratorProcessorSpanMetricsIntrinsicDimensions
@@ -2823,24 +2759,16 @@ func (in *TempoLimits) DeepCopyInto(out *TempoLimits) {
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsFilterPolicies != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsFilterPolicies, &out.MetricsGeneratorProcessorSpanMetricsFilterPolicies
-		*out = make([]*FilterPolicy, len(*in))
+		*out = make([]FilterPolicy, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(FilterPolicy)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsDimensionMappings != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsDimensionMappings, &out.MetricsGeneratorProcessorSpanMetricsDimensionMappings
-		*out = make([]*DimensionMappings, len(*in))
+		*out = make([]DimensionMappings, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(DimensionMappings)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsEnableTargetInfo != nil {
@@ -2945,14 +2873,8 @@ func (in *TempoLimitsInput) DeepCopyInto(out *TempoLimitsInput) {
 	}
 	if in.Forwarders != nil {
 		in, out := &in.Forwarders, &out.Forwarders
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorRingSize != nil {
 		in, out := &in.MetricsGeneratorRingSize, &out.MetricsGeneratorRingSize
@@ -2961,14 +2883,8 @@ func (in *TempoLimitsInput) DeepCopyInto(out *TempoLimitsInput) {
 	}
 	if in.MetricsGeneratorProcessors != nil {
 		in, out := &in.MetricsGeneratorProcessors, &out.MetricsGeneratorProcessors
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorMaxActiveSeries != nil {
 		in, out := &in.MetricsGeneratorMaxActiveSeries, &out.MetricsGeneratorMaxActiveSeries
@@ -2997,36 +2913,18 @@ func (in *TempoLimitsInput) DeepCopyInto(out *TempoLimitsInput) {
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsHistogramBuckets != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsHistogramBuckets, &out.MetricsGeneratorProcessorServiceGraphsHistogramBuckets
-		*out = make([]*float64, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(float64)
-				**out = **in
-			}
-		}
+		*out = make([]float64, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsDimensions != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsDimensions, &out.MetricsGeneratorProcessorServiceGraphsDimensions
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsPeerAttributes != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsPeerAttributes, &out.MetricsGeneratorProcessorServiceGraphsPeerAttributes
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorServiceGraphsEnableClientServerPrefix != nil {
 		in, out := &in.MetricsGeneratorProcessorServiceGraphsEnableClientServerPrefix, &out.MetricsGeneratorProcessorServiceGraphsEnableClientServerPrefix
@@ -3035,25 +2933,13 @@ func (in *TempoLimitsInput) DeepCopyInto(out *TempoLimitsInput) {
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsHistogramBuckets != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsHistogramBuckets, &out.MetricsGeneratorProcessorSpanMetricsHistogramBuckets
-		*out = make([]*float64, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(float64)
-				**out = **in
-			}
-		}
+		*out = make([]float64, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsDimensions != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsDimensions, &out.MetricsGeneratorProcessorSpanMetricsDimensions
-		*out = make([]*string, len(*in))
-		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(string)
-				**out = **in
-			}
-		}
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsIntrinsicDimensions != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsIntrinsicDimensions, &out.MetricsGeneratorProcessorSpanMetricsIntrinsicDimensions
@@ -3064,24 +2950,16 @@ func (in *TempoLimitsInput) DeepCopyInto(out *TempoLimitsInput) {
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsFilterPolicies != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsFilterPolicies, &out.MetricsGeneratorProcessorSpanMetricsFilterPolicies
-		*out = make([]*FilterPolicy, len(*in))
+		*out = make([]FilterPolicy, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(FilterPolicy)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsDimensionMappings != nil {
 		in, out := &in.MetricsGeneratorProcessorSpanMetricsDimensionMappings, &out.MetricsGeneratorProcessorSpanMetricsDimensionMappings
-		*out = make([]*DimensionMappings, len(*in))
+		*out = make([]DimensionMappings, len(*in))
 		for i := range *in {
-			if (*in)[i] != nil {
-				in, out := &(*in)[i], &(*out)[i]
-				*out = new(DimensionMappings)
-				(*in).DeepCopyInto(*out)
-			}
+			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
 	if in.MetricsGeneratorProcessorSpanMetricsEnableTargetInfo != nil {
