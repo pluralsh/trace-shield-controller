@@ -180,10 +180,15 @@ type LokiLimits struct {
 type LokiLimitsInput LokiLimits
 
 type StreamRetention struct {
-	Period   metav1.Duration `yaml:"period" json:"period"`
-	Priority *int            `yaml:"priority" json:"priority"`
-	Selector *string         `yaml:"selector" json:"selector"`
+	// +kubebuilder:validation:Optional
+	Period *metav1.Duration `yaml:"period,omitempty" json:"period,omitempty"`
+	// +kubebuilder:validation:Optional
+	Priority *int `yaml:"priority,omitempty" json:"priority,omitempty"`
+	// +kubebuilder:validation:Optional
+	Selector *string `yaml:"selector,omitempty" json:"selector,omitempty"`
 }
+
+type StreamRetentionInput StreamRetention
 
 type ShardstreamsConfig struct {
 	// +kubebuilder:validation:Optional
@@ -197,6 +202,8 @@ type ShardstreamsConfig struct {
 	DesiredRate *uint64 `yaml:"desired_rate,omitempty" json:"desired_rate,omitempty"`
 }
 
+type ShardstreamsConfigInput ShardstreamsConfig
+
 type BlockedQuery struct {
 	// +kubebuilder:validation:Optional
 	Pattern *string `yaml:"pattern,omitempty" json:"pattern,omitempty"`
@@ -208,6 +215,8 @@ type BlockedQuery struct {
 	// +kubebuilder:validation:Type=string
 	Types *string `yaml:"types,omitempty" json:"types,omitempty"` // TODO: add validation that the string is a comma separated list of the types metric, filter and limited
 }
+
+type BlockedQueryInput BlockedQuery
 
 type RulerAlertManagerConfig struct {
 	// URL of the Alertmanager to send notifications to.
@@ -222,13 +231,13 @@ type RulerAlertManagerConfig struct {
 	AlertmanagerRefreshInterval *metav1.Duration `yaml:"alertmanager_refresh_interval,omitempty" json:"alertmanager_refresh_interval,omitempty"`
 	// Enables the ruler notifier to use the Alertmananger V2 API.
 	// +kubebuilder:validation:Optional
-	AlertmanangerEnableV2API bool `yaml:"enable_alertmanager_v2,omitempty" json:"enable_alertmanager_v2,omitempty"`
+	AlertmanangerEnableV2API *bool `yaml:"enable_alertmanager_v2,omitempty" json:"enable_alertmanager_v2,omitempty"`
 	// Configuration for alert relabeling.
 	// +kubebuilder:validation:Optional // TODO: remove all references to this to our own type since the yaml tags will be different
 	AlertRelabelConfigs []*RelabelConfig `yaml:"alert_relabel_configs,omitempty" json:"alert_relabel_configs,omitempty" doc:"description=List of alert relabel configs."`
 	// Capacity of the queue for notifications to be sent to the Alertmanager.
 	// +kubebuilder:validation:Optional
-	NotificationQueueCapacity int `yaml:"notification_queue_capacity,omitempty" json:"notification_queue_capacity,omitempty"`
+	NotificationQueueCapacity *int `yaml:"notification_queue_capacity,omitempty" json:"notification_queue_capacity,omitempty"`
 	// HTTP timeout duration when sending notifications to the Alertmanager.
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:validation:Type=string
@@ -236,8 +245,10 @@ type RulerAlertManagerConfig struct {
 	NotificationTimeout *metav1.Duration `yaml:"notification_timeout,omitempty" json:"notification_timeout,omitempty"`
 	// Client configs for interacting with the Alertmanager
 	// +kubebuilder:validation:Optional
-	Notifier NotifierConfig `yaml:"alertmanager_client,omitempty" json:"alertmanager_client,omitempty"`
+	Notifier *NotifierConfig `yaml:"alertmanager_client,omitempty" json:"alertmanager_client,omitempty"`
 }
+
+type RulerAlertManagerConfigInput RulerAlertManagerConfig
 
 type NotifierConfig struct {
 	// +kubebuilder:validation:Optional
@@ -248,23 +259,29 @@ type NotifierConfig struct {
 	HeaderAuth *NotifierHeaderAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
+type NotifierConfigInput NotifierConfig
+
 // NotifBasicAuth configures basic authentication for HTTP clients.
 type NotifierBasicAuth struct {
 	// +kubebuilder:validation:Optional
-	Username string `yaml:"basic_auth_username,omitempty" json:"basic_auth_username,omitempty"`
+	Username *string `yaml:"basic_auth_username,omitempty" json:"basic_auth_username,omitempty"`
 	// +kubebuilder:validation:Optional
-	Password string `yaml:"basic_auth_password,omitempty" json:"basic_auth_password,omitempty"`
+	Password *string `yaml:"basic_auth_password,omitempty" json:"basic_auth_password,omitempty"`
 }
+
+type NotifierBasicAuthInput NotifierBasicAuth
 
 // HeaderAuth condigures header based authorization for HTTP clients.
 type NotifierHeaderAuth struct {
 	// +kubebuilder:validation:Optional
-	Type string `yaml:"type,omitempty" json:"type,omitempty"`
+	Type *string `yaml:"type,omitempty" json:"type,omitempty"`
 	// +kubebuilder:validation:Optional
-	Credentials string `yaml:"credentials,omitempty" json:"credentials,omitempty"`
+	Credentials *string `yaml:"credentials,omitempty" json:"credentials,omitempty"`
 	// +kubebuilder:validation:Optional
-	CredentialsFile string `yaml:"credentials_file,omitempty" json:"credentials_file,omitempty"`
+	CredentialsFile *string `yaml:"credentials_file,omitempty" json:"credentials_file,omitempty"`
 }
+
+type NotifierHeaderAuthInput NotifierHeaderAuth
 
 // ClientConfig is the config for client TLS.
 type NotifierTLSClientConfig struct {
@@ -283,3 +300,5 @@ type NotifierTLSClientConfig struct {
 	// +kubebuilder:validation:Optional
 	MinVersion *string `yaml:"tls_min_version,omitempty" json:"tls_min_version,omitempty" category:"advanced"`
 }
+
+type NotifierTLSClientConfigInput NotifierTLSClientConfig

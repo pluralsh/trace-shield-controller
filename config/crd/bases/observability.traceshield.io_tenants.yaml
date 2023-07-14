@@ -167,10 +167,6 @@ spec:
                               type: integer
                             selector:
                               type: string
-                          required:
-                          - period
-                          - priority
-                          - selector
                           type: object
                         type: array
                       ruler_alertmanager_config:

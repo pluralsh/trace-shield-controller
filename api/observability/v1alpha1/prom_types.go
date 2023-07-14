@@ -1,7 +1,10 @@
 package v1alpha1
 
 import (
-	prom_v1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"fmt"
+	"io"
+	"strconv"
+
 	prom_config "github.com/prometheus/common/config"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -174,11 +177,15 @@ type ProxyConfig struct {
 	ProxyConnectHeader prom_config.Header `yaml:"proxy_connect_header,omitempty" json:"proxy_connect_header,omitempty"`
 }
 
+// LabelName is a valid Prometheus label name which may only contain ASCII letters, numbers, as well as underscores.
+// +kubebuilder:validation:Pattern:="^[a-zA-Z_][a-zA-Z0-9_]*$"
+type LabelName string
+
 type RelabelConfig struct {
 	// A list of labels from which values are taken and concatenated
 	// with the configured separator in order.
 	// +kubebuilder:validation:Optional
-	SourceLabels []*prom_v1.LabelName `yaml:"source_labels,omitempty" json:"source_labels,omitempty"`
+	SourceLabels []*LabelName `yaml:"source_labels,omitempty" json:"source_labels,omitempty"`
 	// Separator is the string between concatenated values from the source labels.
 	// +kubebuilder:validation:Optional
 	Separator *string `yaml:"separator,omitempty" json:"separator,omitempty"`
@@ -199,5 +206,88 @@ type RelabelConfig struct {
 	// +kubebuilder:validation:Optional
 	// +kubebuilder:validation:Enum=replace;Replace;keep;Keep;drop;Drop;hashmod;HashMod;labelmap;LabelMap;labeldrop;LabelDrop;labelkeep;LabelKeep;lowercase;Lowercase;uppercase;Uppercase;keepequal;KeepEqual;dropequal;DropEqual
 	// +kubebuilder:default=replace
-	Action *string `yaml:"action,omitempty" json:"action,omitempty"`
+	Action *RelabelAction `yaml:"action,omitempty" json:"action,omitempty"`
+}
+
+type RelabelConfigInput RelabelConfig
+
+type RelabelAction string
+
+const (
+	RelabelActionReplace    RelabelAction = "replace"
+	RelabelActionReplace0   RelabelAction = "Replace"
+	RelabelActionKeep       RelabelAction = "keep"
+	RelabelActionKeep0      RelabelAction = "Keep"
+	RelabelActionDrop       RelabelAction = "drop"
+	RelabelActionDrop0      RelabelAction = "Drop"
+	RelabelActionHashmod    RelabelAction = "hashmod"
+	RelabelActionHashMod    RelabelAction = "HashMod"
+	RelabelActionLabelmap   RelabelAction = "labelmap"
+	RelabelActionLabelMap   RelabelAction = "LabelMap"
+	RelabelActionLabeldrop  RelabelAction = "labeldrop"
+	RelabelActionLabelDrop  RelabelAction = "LabelDrop"
+	RelabelActionLabelkeep  RelabelAction = "labelkeep"
+	RelabelActionLabelKeep  RelabelAction = "LabelKeep"
+	RelabelActionLowercase  RelabelAction = "lowercase"
+	RelabelActionLowercase0 RelabelAction = "Lowercase"
+	RelabelActionUppercase  RelabelAction = "uppercase"
+	RelabelActionUppercase0 RelabelAction = "Uppercase"
+	RelabelActionKeepequal  RelabelAction = "keepequal"
+	RelabelActionKeepEqual  RelabelAction = "KeepEqual"
+	RelabelActionDropequal  RelabelAction = "dropequal"
+	RelabelActionDropEqual  RelabelAction = "DropEqual"
+)
+
+var AllRelabelAction = []RelabelAction{
+	RelabelActionReplace,
+	RelabelActionReplace0,
+	RelabelActionKeep,
+	RelabelActionKeep0,
+	RelabelActionDrop,
+	RelabelActionDrop0,
+	RelabelActionHashmod,
+	RelabelActionHashMod,
+	RelabelActionLabelmap,
+	RelabelActionLabelMap,
+	RelabelActionLabeldrop,
+	RelabelActionLabelDrop,
+	RelabelActionLabelkeep,
+	RelabelActionLabelKeep,
+	RelabelActionLowercase,
+	RelabelActionLowercase0,
+	RelabelActionUppercase,
+	RelabelActionUppercase0,
+	RelabelActionKeepequal,
+	RelabelActionKeepEqual,
+	RelabelActionDropequal,
+	RelabelActionDropEqual,
+}
+
+func (e RelabelAction) IsValid() bool {
+	switch e {
+	case RelabelActionReplace, RelabelActionReplace0, RelabelActionKeep, RelabelActionKeep0, RelabelActionDrop, RelabelActionDrop0, RelabelActionHashmod, RelabelActionHashMod, RelabelActionLabelmap, RelabelActionLabelMap, RelabelActionLabeldrop, RelabelActionLabelDrop, RelabelActionLabelkeep, RelabelActionLabelKeep, RelabelActionLowercase, RelabelActionLowercase0, RelabelActionUppercase, RelabelActionUppercase0, RelabelActionKeepequal, RelabelActionKeepEqual, RelabelActionDropequal, RelabelActionDropEqual:
+		return true
+	}
+	return false
+}
+
+func (e RelabelAction) String() string {
+	return string(e)
+}
+
+func (e *RelabelAction) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RelabelAction(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RelabelAction", str)
+	}
+	return nil
+}
+
+func (e RelabelAction) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
