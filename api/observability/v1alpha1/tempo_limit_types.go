@@ -183,6 +183,21 @@ type WrappedMap struct {
 	Object map[string]interface{} `yaml:",inline" json:",inline"`
 }
 
+func (e *WrappedMap) UnmarshalGQL(v interface{}) error {
+	m, ok := v.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("%T is not a map", v)
+	}
+
+	*e = WrappedMap{Object: m}
+
+	return nil
+}
+
+func (e WrappedMap) MarshalGQL(w io.Writer) {
+	json.NewEncoder(w).Encode(e)
+}
+
 // MarshalJSON defers JSON encoding to the wrapped map
 func (w *WrappedMap) MarshalJSON() ([]byte, error) {
 	return json.Marshal(w.Object)
