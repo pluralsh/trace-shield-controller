@@ -267,6 +267,10 @@ func (t BlockedQueryTypes) String() string {
 	return strings.Join(s, ",")
 }
 
+func (t BlockedQueryTypes) BlockedQueryType() []BlockedQueryType {
+	return t
+}
+
 // MarshalYAML implements the yaml.Marshaler interface.
 func (t BlockedQueryTypes) MarshalYAML() (interface{}, error) {
 	return t.String(), nil
