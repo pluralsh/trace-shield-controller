@@ -167,7 +167,7 @@ type PolicyMatch struct {
 	// +kubebuilder:validation:Enum=strict;regex
 	MatchType *MatchType `yaml:"match_type,omitempty" json:"match_type,omitempty"`
 	// +kubebuilder:validation:Optional
-	Attributes []*MatchPolicyAttribute `yaml:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes []MatchPolicyAttribute `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 }
 
 type MatchPolicyAttribute struct {
