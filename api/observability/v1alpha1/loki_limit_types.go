@@ -1,6 +1,11 @@
 package v1alpha1
 
 import (
+	"fmt"
+	"io"
+	"strconv"
+	"strings"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -212,8 +217,74 @@ type BlockedQuery struct {
 	// +kubebuilder:validation:Optional
 	Hash *uint32 `yaml:"hash,omitempty" json:"hash,omitempty"`
 	// +kubebuilder:validation:Optional
-	// +kubebuilder:validation:Type=string
-	Types *string `yaml:"types,omitempty" json:"types,omitempty"` // TODO: add validation that the string is a comma separated list of the types metric, filter and limited
+	Types BlockedQueryTypes `yaml:"types,omitempty" json:"types,omitempty"`
+}
+
+type BlockedQueryTypes []BlockedQueryType
+
+// BlockedQueryType is the type of blocked query
+// +kubebuilder:validation:Enum=metric;filter;limited
+type BlockedQueryType string
+
+const (
+	BlockedQueryTypeMetric  BlockedQueryType = "metric"
+	BlockedQueryTypeFilter  BlockedQueryType = "filter"
+	BlockedQueryTypeLimited BlockedQueryType = "limited"
+)
+
+func (e BlockedQueryType) IsValid() bool {
+	switch e {
+	case BlockedQueryTypeMetric, BlockedQueryTypeFilter, BlockedQueryTypeLimited:
+		return true
+	}
+	return false
+}
+
+func (e BlockedQueryType) String() string {
+	return string(e)
+}
+
+func (e *BlockedQueryType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BlockedQueryType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RelabelAction", str)
+	}
+	return nil
+}
+
+func (e BlockedQueryType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// String implements the fmt.Stringer interface.
+func (t BlockedQueryTypes) String() string {
+	var s []string
+	for _, v := range t {
+		s = append(s, string(v))
+	}
+	return strings.Join(s, ",")
+}
+
+// MarshalYAML implements the yaml.Marshaler interface.
+func (t BlockedQueryTypes) MarshalYAML() (interface{}, error) {
+	return t.String(), nil
+}
+
+// UnmarshalYAML implements the yaml.Unmarshaler interface.
+func (t *BlockedQueryTypes) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var s string
+	if err := unmarshal(&s); err != nil {
+		return err
+	}
+	for _, v := range strings.Split(s, ",") {
+		*t = append(*t, BlockedQueryType(v))
+	}
+	return nil
 }
 
 type BlockedQueryInput BlockedQuery

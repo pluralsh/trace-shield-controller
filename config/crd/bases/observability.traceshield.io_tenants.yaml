@@ -53,7 +53,15 @@ spec:
                             regex:
                               type: boolean
                             types:
-                              type: string
+                              items:
+                                description: BlockedQueryType is the type of blocked
+                                  query
+                                enum:
+                                - metric
+                                - filter
+                                - limited
+                                type: string
+                              type: array
                           type: object
                         type: array
                       cardinality_limit:
