@@ -1265,9 +1265,13 @@ func (in *MimirLimits) DeepCopyInto(out *MimirLimits) {
 	}
 	if in.MetricRelabelConfigs != nil {
 		in, out := &in.MetricRelabelConfigs, &out.MetricRelabelConfigs
-		*out = make([]RelabelConfig, len(*in))
+		*out = make([]*RelabelConfig, len(*in))
 		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(RelabelConfig)
+				(*in).DeepCopyInto(*out)
+			}
 		}
 	}
 	if in.MaxGlobalSeriesPerUser != nil {
@@ -1702,9 +1706,13 @@ func (in *MimirLimitsInput) DeepCopyInto(out *MimirLimitsInput) {
 	}
 	if in.MetricRelabelConfigs != nil {
 		in, out := &in.MetricRelabelConfigs, &out.MetricRelabelConfigs
-		*out = make([]RelabelConfig, len(*in))
+		*out = make([]*RelabelConfig, len(*in))
 		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(RelabelConfig)
+				(*in).DeepCopyInto(*out)
+			}
 		}
 	}
 	if in.MaxGlobalSeriesPerUser != nil {
