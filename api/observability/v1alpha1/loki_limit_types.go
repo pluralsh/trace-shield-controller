@@ -193,8 +193,6 @@ type StreamRetention struct {
 	Selector *string `yaml:"selector,omitempty" json:"selector,omitempty"`
 }
 
-type StreamRetentionInput StreamRetention
-
 type ShardstreamsConfig struct {
 	// +kubebuilder:validation:Optional
 	Enabled *bool `yaml:"enabled,omitempty" json:"enabled,omitempty"`
@@ -206,8 +204,6 @@ type ShardstreamsConfig struct {
 	// +kubebuilder:validation:Optional
 	DesiredRate *uint64 `yaml:"desired_rate,omitempty" json:"desired_rate,omitempty"`
 }
-
-type ShardstreamsConfigInput ShardstreamsConfig
 
 type BlockedQuery struct {
 	// +kubebuilder:validation:Optional
