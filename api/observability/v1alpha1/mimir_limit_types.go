@@ -44,7 +44,7 @@ type MimirLimits struct {
 	// +kubebuilder:validation:Optional
 	IngestionTenantShardSize *int `yaml:"ingestion_tenant_shard_size,omitempty" json:"ingestion_tenant_shard_size,omitempty"`
 	// +kubebuilder:validation:Optional
-	MetricRelabelConfigs []RelabelConfig `yaml:"metric_relabel_configs,omitempty" json:"metric_relabel_configs,omitempty" doc:"nocli|description=List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs." category:"experimental"`
+	MetricRelabelConfigs []*RelabelConfig `yaml:"metric_relabel_configs,omitempty" json:"metric_relabel_configs,omitempty" doc:"nocli|description=List of metric relabel configurations. Note that in most situations, it is more effective to use metrics relabeling directly in the Prometheus server, e.g. remote_write.write_relabel_configs." category:"experimental"`
 
 	// Ingester enforced limits.
 	// Series
