@@ -121,8 +121,6 @@ type FilterPolicy struct {
 	Exclude *PolicyMatch `yaml:"exclude,omitempty" json:"exclude,omitempty"`
 }
 
-type FilterPolicyInput FilterPolicy
-
 type MatchType string
 
 const (
@@ -172,8 +170,6 @@ type PolicyMatch struct {
 	Attributes []MatchPolicyAttribute `yaml:"attributes,omitempty" json:"attributes,omitempty"`
 }
 
-type PolicyMatchInput PolicyMatch
-
 type MatchPolicyAttribute struct {
 	// +kubebuilder:validation:Optional
 	Key *string `yaml:"key,omitempty" json:"key,omitempty"`
@@ -184,8 +180,6 @@ type MatchPolicyAttribute struct {
 	// +kubebuilder:validation:Type=object
 	Value WrappedMap `yaml:"value,omitempty" json:"value,omitempty"`
 }
-
-type MatchPolicyAttributeInput MatchPolicyAttribute
 
 type WrappedMap struct {
 	Object map[string]interface{} `yaml:",inline" json:",inline"`
@@ -248,5 +242,3 @@ type DimensionMappings struct {
 	// +kubebuilder:validation:Optional
 	Join *string `yaml:"join,omitempty" json:"join,omitempty"`
 }
-
-type DimensionMappingsInput DimensionMappings

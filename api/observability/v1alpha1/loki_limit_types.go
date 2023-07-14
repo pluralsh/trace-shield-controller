@@ -317,8 +317,6 @@ type RulerAlertManagerConfig struct {
 	Notifier *NotifierConfig `yaml:"alertmanager_client,omitempty" json:"alertmanager_client,omitempty"`
 }
 
-type RulerAlertManagerConfigInput RulerAlertManagerConfig
-
 type NotifierConfig struct {
 	// +kubebuilder:validation:Optional
 	TLS *NotifierTLSClientConfig `yaml:",inline,omitempty" json:",inline,omitempty"`
@@ -328,8 +326,6 @@ type NotifierConfig struct {
 	HeaderAuth *NotifierHeaderAuth `yaml:",inline,omitempty" json:",inline,omitempty"`
 }
 
-type NotifierConfigInput NotifierConfig
-
 // NotifBasicAuth configures basic authentication for HTTP clients.
 type NotifierBasicAuth struct {
 	// +kubebuilder:validation:Optional
@@ -337,8 +333,6 @@ type NotifierBasicAuth struct {
 	// +kubebuilder:validation:Optional
 	Password *string `yaml:"basic_auth_password,omitempty" json:"basic_auth_password,omitempty"`
 }
-
-type NotifierBasicAuthInput NotifierBasicAuth
 
 // HeaderAuth condigures header based authorization for HTTP clients.
 type NotifierHeaderAuth struct {
@@ -349,8 +343,6 @@ type NotifierHeaderAuth struct {
 	// +kubebuilder:validation:Optional
 	CredentialsFile *string `yaml:"credentials_file,omitempty" json:"credentials_file,omitempty"`
 }
-
-type NotifierHeaderAuthInput NotifierHeaderAuth
 
 // ClientConfig is the config for client TLS.
 type NotifierTLSClientConfig struct {
@@ -369,5 +361,3 @@ type NotifierTLSClientConfig struct {
 	// +kubebuilder:validation:Optional
 	MinVersion *string `yaml:"tls_min_version,omitempty" json:"tls_min_version,omitempty" category:"advanced"`
 }
-
-type NotifierTLSClientConfigInput NotifierTLSClientConfig

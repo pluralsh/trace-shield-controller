@@ -224,8 +224,6 @@ type RelabelConfig struct {
 	Action *RelabelAction `yaml:"action,omitempty" json:"action,omitempty"`
 }
 
-type RelabelConfigInput RelabelConfig
-
 type RelabelAction string
 
 const (
