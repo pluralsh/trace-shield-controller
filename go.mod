@@ -4,8 +4,8 @@ go 1.20
 
 require (
 	github.com/go-logr/logr v1.2.4
-	github.com/onsi/ginkgo/v2 v2.9.7
-	github.com/onsi/gomega v1.27.8
+	github.com/onsi/ginkgo/v2 v2.11.0
+	github.com/onsi/gomega v1.27.10
 	github.com/ory/keto/proto v0.11.1-alpha.0
 	github.com/ory/x v0.0.568
 	github.com/pluralsh/controller-reconcile-helper v0.1.0
@@ -68,7 +68,7 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.66.0
 	github.com/prometheus/client_golang v1.15.1 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
-	github.com/prometheus/common v0.44.0 // indirect
+	github.com/prometheus/common v0.44.0
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
@@ -79,7 +79,7 @@ require (
 	golang.org/x/term v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.9.1 // indirect
+	golang.org/x/tools v0.9.3 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
